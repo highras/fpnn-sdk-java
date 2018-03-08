@@ -1,0 +1,79 @@
+package com.fpnn;
+
+import com.fpnn.sdk.*;
+import com.fpnn.sdk.proto.Answer;
+import com.fpnn.sdk.proto.Quest;
+
+import java.net.InetSocketAddress;
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        //-- Optional
+        ClientEngine.setAutoStop(false);
+
+        TCPClient client = TCPClient.create("35.167.185.139", 13011);
+
+        ConnectionConnectedCallback openCb = (InetSocketAddress peerAddress, boolean connected) -> {
+                System.out.println("--- opened ----");
+            };
+
+        ConnectionWillCloseCallback closeCb = (InetSocketAddress peerAddress, boolean causedByError) -> {
+            System.out.println("Connection closed by error? " + causedByError);
+        };
+
+        client.setConnectedCallback(openCb);
+        client.setWillCloseCallback(closeCb);
+
+        client.setQuestProcessor(new QuestProcessor(), "com.fpnn.QuestProcessor");
+
+/*        if (!client.enableEncryptorByDerFile("secp256k1",
+                "/Users/shiwangxing/Documents/Development/TestingPlayground/keys/test-secp256k1-public.der"))
+            System.out.println("Enable encrypt failed.");
+*/
+        Quest quest = new Quest("two way demo");
+        try {
+            Answer answer = client.sendQuest(quest);
+            System.out.println("Answer: is error answer: " + answer.getErrorCode());
+            for (Object obj : answer.getPayload().keySet()) {
+                Object value = answer.getPayload().get(obj);
+                System.out.println("--- key: " + obj + ", value: " + value);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        quest = new Quest("httpDemo");
+        try {
+            Answer answer = client.sendQuest(quest);
+            System.out.println("Answer: is error answer: " + answer.getErrorCode());
+            for (Object obj : answer.getPayload().keySet()) {
+                Object value = answer.getPayload().get(obj);
+                System.out.println("--- key: " + obj + ", value: " + value);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        quest = new Quest("duplex demo");
+        quest.param("duplex method", "duplexQuest");
+        try {
+            Answer answer = client.sendQuest(quest);
+            System.out.println("Answer: is error answer: " + answer.getErrorCode());
+            for (Object obj : answer.getPayload().keySet()) {
+                Object value = answer.getPayload().get(obj);
+                System.out.println("--- key: " + obj + ", value: " + value);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        //-- Optional
+        ErrorRecorder recorder = (ErrorRecorder)ErrorRecorder.getInstance();
+        recorder.println();
+
+        //-- Optional: Only when ClientEngine.setAutoStop(true);
+        ClientEngine.stop();
+    }
+}
