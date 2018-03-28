@@ -463,7 +463,7 @@ class TCPConnection {
         Answer answer = null;
         if (quest.isTwoWay()) {
             answer = new Answer(quest);
-            answer.fillErrorInfo(errorCode, ex, "FPNN Java SDK");
+            answer.fillErrorInfo(errorCode, ex);
         }
         return answer;
     }

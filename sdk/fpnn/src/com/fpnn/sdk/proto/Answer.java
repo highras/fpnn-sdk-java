@@ -47,12 +47,6 @@ public class Answer extends Message {
         payload.put("ex", message);
     }
 
-    public void fillErrorInfo(int errorCode, String message, String raiser) {
-        fillErrorInfo(errorCode);
-        payload.put("ex", message);
-        payload.put("raiser", raiser);
-    }
-
     public ByteBuffer rawData() throws IOException {
 
         ProtocolPackageBuilder builder = new ProtocolPackageBuilder();
