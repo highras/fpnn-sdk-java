@@ -1,0 +1,18 @@
+apply plugin: 'java-library'
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+}
+
+task make(type: Copy) {
+    delete 'build/libs/fpnn-lib.jar'
+    from('build/intermediates/bundles/release/')
+    into('build/libs/')
+    include('tmp-lib.jar')
+    rename ('tmp-lib.jar', 'fpnn-lib.jar')
+}
+
+make.dependsOn(build)
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"

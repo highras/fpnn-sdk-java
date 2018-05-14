@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="fpnn-lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../fpnn-lib/build/libs/fpnn-lib.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
