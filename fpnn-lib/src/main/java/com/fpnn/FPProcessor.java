@@ -1,7 +1,7 @@
 package com.fpnn;
 
+import com.fpnn.event.EventData;
 import com.fpnn.event.FPEvent;
-import com.fpnn.event.FPEventManager;
 
 public class FPProcessor {
 
@@ -13,14 +13,14 @@ public class FPProcessor {
     }
 
     private IProcessor _processor;
-    private FPEventManager _event;
+    private FPEvent _event;
 
     public FPProcessor() {
 
-        this._event = new FPEventManager();
+        this._event = new FPEvent();
     }
 
-    public FPEventManager getEvent() {
+    public FPEvent getEvent() {
 
         return this._event;
     }
@@ -43,12 +43,12 @@ public class FPProcessor {
 
                     if (data.getFlag() == 0) {
 
-                        self._event.fireEvent(new FPEvent(this, data.getMethod(), data.jsonPayload()));
+                        self._event.fireEvent(new EventData(this, data.getMethod(), data.jsonPayload()));
                     }
 
                     if (data.getFlag() == 1) {
 
-                        self._event.fireEvent(new FPEvent(this, data.getMethod(), data.msgpackPayload()));
+                        self._event.fireEvent(new EventData(this, data.getMethod(), data.msgpackPayload()));
                     }
                 }
 

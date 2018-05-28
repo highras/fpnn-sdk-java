@@ -1,74 +1,125 @@
 package com.fpnn.callback;
 
+import com.fpnn.FPConfig;
 import com.fpnn.FPData;
+import com.fpnn.nio.ThreadPool;
 
-import java.util.Map;
+import java.util.*;
 
 public class FPCallback {
 
     public interface ICallback {
 
-        void callback(FPCallback fpcb);
+        void callback(CallbackData cbd);
     }
 
 
-    private FPData _data = null;
+    private Map _cbMap = new HashMap();
+    private Map _exMap = new HashMap();
 
-    public FPData getData() {
+    public void addCallback(String key, FPCallback.ICallback callback, int timeout) {
 
-        return this._data;
+        synchronized (this._cbMap) {
+
+            this._cbMap.put(key, callback);
+        }
+
+        synchronized (this._exMap) {
+
+            int ts = timeout <= 0 ? FPConfig.SEND_TIMEOUT : timeout;
+            long expire = ts + Calendar.getInstance().getTimeInMillis();
+            this._exMap.put(key, expire);
+        }
     }
 
-    public FPCallback(FPData data) {
+    public void removeCallback() {
 
-        this._data = data;
+        synchronized (this._cbMap) {
+
+            this._cbMap.clear();
+        }
     }
 
+    public void execCallback(String key, FPData data) {
 
-    private Exception _exception = null;
+        synchronized (this._cbMap) {
 
-    public Exception getException() {
+            FPCallback.ICallback cb = (FPCallback.ICallback) this._cbMap.get(key);
 
-        return this._exception;
-    }
+            if (cb != null) {
 
-    public FPCallback(Exception ex) {
+                this._cbMap.remove(key);
 
-        this._exception = ex;
-    }
+                final FPCallback.ICallback fcb = cb;
+                final FPData fData = data;
 
+                ThreadPool.getInstance().execute(new Runnable() {
 
-    private Object _payload = null;
+                    @Override
+                    public void run() {
 
-    public Object getPayload() {
-
-        return this._payload;
-    }
-
-    public FPCallback(Object payload) {
-
-        this._payload = payload;
-    }
-
-
-    public void checkException(Map data) {
-
-        if (this._exception == null) {
-
-            if (data == null) {
-
-                this._exception = new Exception("data is null!");
-            } else if (data.containsKey("code") && data.containsKey("ex")) {
-
-                this._exception = new Exception("code: ".concat(data.get("code").toString()).concat(", ex: ").concat(data.get("ex").toString()));
+                        fcb.callback(new CallbackData(fData));
+                    }
+                });
             }
         }
+    }
 
-        if (this._exception == null) {
+    public void execCallback(String key, Exception ex) {
 
-            this._payload = data;
+        synchronized (this._cbMap) {
+
+            FPCallback.ICallback cb = (FPCallback.ICallback) this._cbMap.get(key);
+
+            if (cb != null) {
+
+                this._cbMap.remove(key);
+
+                final FPCallback.ICallback fcb = cb;
+                final Exception fex = ex;
+
+                ThreadPool.getInstance().execute(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        fcb.callback(new CallbackData(fex));
+                    }
+                });
+            }
         }
+    }
 
-        this._data = null;
+    public void onSecond(long timestamp) {
+
+        synchronized (this._exMap) {
+
+            List keys = new ArrayList();
+            Iterator itor = this._exMap.entrySet().iterator();
+
+            while (itor.hasNext()) {
+
+                Map.Entry entry = (Map.Entry) itor.next();
+                String key = (String) entry.getKey();
+                long expire = (long) entry.getValue();
+
+                if (expire > timestamp) {
+
+                    continue;
+                }
+
+                keys.add(key);
+            }
+
+            itor = keys.iterator();
+
+            while (itor.hasNext()) {
+
+                String key = (String) itor.next();
+
+                this._exMap.remove(key);
+                this.execCallback(key, new Exception("timeout with expire"));
+            }
+        }
     }
 }

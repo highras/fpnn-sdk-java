@@ -1,7 +1,7 @@
 package com.fpnn;
 
+import com.fpnn.event.EventData;
 import com.fpnn.event.FPEvent;
-import com.fpnn.event.FPEventManager;
 import com.fpnn.nio.NIOCore;
 import com.fpnn.nio.ThreadPool;
 
@@ -31,7 +31,7 @@ public class FPSocket {
 
     private long _expire = 0;
     private boolean _isClosed = true;
-    private FPEventManager _event;
+    private FPEvent _event;
 
     private ByteBuffer _sendBuffer = null;
     private List _sendQueue = new ArrayList();
@@ -41,11 +41,11 @@ public class FPSocket {
         this._host = host;
         this._port = port;
         this._timeout = timeout;
-        this._event = new FPEventManager();
+        this._event = new FPEvent();
         this._recvData = recvData;
     }
 
-    public FPEventManager getEvent() {
+    public FPEvent getEvent() {
 
         return this._event;
     }
@@ -253,7 +253,7 @@ public class FPSocket {
     private void onConnect() {
 
         this._expire = 0;
-        this._event.fireEvent(new FPEvent(this, "connect"));
+        this._event.fireEvent(new EventData(this, "connect"));
     }
 
     private void onClose(Exception ex) {
@@ -266,7 +266,7 @@ public class FPSocket {
             this.onError(ex);
         }
 
-        this._event.fireEvent(new FPEvent(this, "close"));
+        this._event.fireEvent(new EventData(this, "close"));
     }
 
     private void onData(SocketChannel socket) {
@@ -276,7 +276,7 @@ public class FPSocket {
 
     private void onError(Exception ex) {
 
-        this._event.fireEvent(new FPEvent(this, "error", ex));
+        this._event.fireEvent(new EventData(this, "error", ex));
     }
 
     public void onSecond(long timestamp) {

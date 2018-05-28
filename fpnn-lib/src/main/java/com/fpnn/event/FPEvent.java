@@ -1,104 +1,99 @@
 package com.fpnn.event;
 
-import com.fpnn.FPData;
+import com.fpnn.nio.ThreadPool;
 
-import java.nio.channels.SocketChannel;
-import java.util.EventListener;
-import java.util.EventObject;
+import java.util.*;
 
-public class FPEvent extends EventObject {
+public class FPEvent {
 
     public interface IListener extends EventListener {
 
-        void fpEvent(FPEvent event);
+        void fpEvent(EventData event);
     }
 
 
-    private String _type;
+    private Map _listeners = new HashMap();
 
-    public String getType() {
+    public void addListener(String type, IListener lisr) {
 
-        return this._type;
+        synchronized (this._listeners) {
+
+            List queue = (List) this._listeners.get(type);
+
+            if (queue == null) {
+
+                queue = new ArrayList();
+                this._listeners.put(type, queue);
+            }
+
+            queue.add(lisr);
+        }
     }
 
-    public FPEvent(Object source, String type) {
+    public void fireEvent(EventData event) {
 
-        super(source);
-        this._type = type;
+        List queue;
+
+        synchronized (this._listeners) {
+
+            queue = (List) this._listeners.get(event.getType());
+        }
+
+        if (queue != null && queue.size() > 0) {
+
+            final List fQueue = queue;
+            final EventData fEvent = event;
+
+            ThreadPool.getInstance().execute(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    Iterator<IListener> iterator = fQueue.iterator();
+
+                    while (iterator.hasNext()) {
+
+                        IListener lisr = iterator.next();
+                        lisr.fpEvent(fEvent);
+                    }
+                }
+            });
+        }
     }
 
+    public void removeListener() {
 
-    private FPData _data = null;
+        synchronized (this._listeners) {
 
-    public FPData getData() {
-
-        return this._data;
+            this._listeners.clear();
+        }
     }
 
-    public FPEvent(Object source, String type, FPData data) {
+    public void removeListener(String type) {
 
-        super(source);
-        this._type = type;
-        this._data = data;
+        synchronized (this._listeners) {
+
+            this._listeners.remove(type);
+        }
     }
 
+    public void removeListener(String type, IListener lisr) {
 
-    private SocketChannel _socket = null;
+        synchronized (this._listeners) {
 
-    public SocketChannel getSocket() {
+            List queue = (List) this._listeners.get(type);
 
-        return this._socket;
-    }
+            if (queue == null) {
 
-    public FPEvent(Object source, String type, SocketChannel socket) {
+                return;
+            }
 
-        super(source);
-        this._type = type;
-        this._socket = socket;
-    }
+            int index = queue.indexOf(lisr);
 
+            if (index != -1) {
 
-    private Exception _exception = null;
-
-    public Exception getException() {
-
-        return this._exception;
-    }
-
-    public FPEvent(Object source, String type, Exception ex) {
-
-        super(source);
-        this._type = type;
-        this._exception = ex;
-    }
-
-
-    private long _timestamp = 0;
-
-    public long getTimestamp() {
-
-        return this._timestamp;
-    }
-
-    public FPEvent(Object source, String type, long timestamp) {
-
-        super(source);
-        this._type = type;
-        this._timestamp = timestamp;
-    }
-
-
-    private Object _payload;
-
-    public Object getPayload() {
-
-        return this._payload;
-    }
-
-    public FPEvent(Object source, String type, Object payload) {
-
-        super(source);
-        this._type = type;
-        this._payload = payload;
+                queue.remove(index);
+            }
+        }
     }
 }

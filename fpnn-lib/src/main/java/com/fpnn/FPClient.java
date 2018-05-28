@@ -1,10 +1,10 @@
 package com.fpnn;
 
+import com.fpnn.callback.CallbackData;
 import com.fpnn.callback.FPCallback;
-import com.fpnn.callback.FPCallbackManager;
 import com.fpnn.encryptor.FPEncryptor;
+import com.fpnn.event.EventData;
 import com.fpnn.event.FPEvent;
-import com.fpnn.event.FPEventManager;
 import com.fpnn.nio.NIOCore;
 
 import java.io.IOException;
@@ -35,9 +35,9 @@ public class FPClient {
 
     private FPPackage _pkg = new FPPackage();
     private FPEncryptor _cyr = new FPEncryptor(_pkg);
-    private FPEventManager _event = new FPEventManager();
+    private FPEvent _event = new FPEvent();
     private FPProcessor _psr = new FPProcessor();
-    private FPCallbackManager _callback = new FPCallbackManager();
+    private FPCallback _callback = new FPCallback();
 
     private long _intervalID = 0;
 
@@ -66,7 +66,7 @@ public class FPClient {
         NIOCore.getInstance().getEvent().addListener("second", new FPEvent.IListener() {
 
             @Override
-            public void fpEvent(FPEvent event) {
+            public void fpEvent(EventData event) {
 
                 self.onSecond(event.getTimestamp());
             }
@@ -84,7 +84,7 @@ public class FPClient {
         FPEvent.IListener listener = new FPEvent.IListener() {
 
             @Override
-            public void fpEvent(FPEvent event) {
+            public void fpEvent(EventData event) {
 
                 switch (event.getType()) {
                     case "connect":
@@ -105,7 +105,7 @@ public class FPClient {
         this._sock.getEvent().addListener("error", listener);
     }
 
-    public FPEventManager getEvent() {
+    public FPEvent getEvent() {
 
         return this._event;
     }
@@ -174,9 +174,9 @@ public class FPClient {
         this.sendQuest(data, null, 0);
     }
 
-    public FPCallback sendQuest(FPData data, int timeout) throws InterruptedException {
+    public CallbackData sendQuest(FPData data, int timeout) throws InterruptedException {
 
-        FPCallback fpcb = null;
+        CallbackData cbd = null;
 
         SyncCallbak syncCallbak = new SyncCallbak();
         this.sendQuest(data, syncCallbak, timeout);
@@ -188,10 +188,10 @@ public class FPClient {
                 syncCallbak.wait();
             }
 
-            fpcb = syncCallbak.getReturn();
+            cbd = syncCallbak.getReturn();
         }
 
-        return fpcb;
+        return cbd;
     }
 
     public void sendQuest(FPData data, FPCallback.ICallback callback) {
@@ -276,9 +276,9 @@ public class FPClient {
             this.sendQuest(data, new FPCallback.ICallback() {
 
                 @Override
-                public void callback(FPCallback fpcb) {
+                public void callback(CallbackData cbd) {
 
-                    self.onSendKey(fpcb.getData());
+                    self.onSendKey(cbd.getData());
                 }
             }, this._timeout);
 
@@ -287,7 +287,7 @@ public class FPClient {
         }
 
         this._intervalID = 0;
-        this._event.fireEvent(new FPEvent(this, "connect"));
+        this._event.fireEvent(new EventData(this, "connect"));
     }
 
     private void onSendKey(FPData data) {
@@ -297,7 +297,7 @@ public class FPClient {
             if (!data.jsonPayload().trim().equals("{}")) {
 
                 this._cyr.setCryptoed(false);
-                this._event.fireEvent(new FPEvent(this, "error", new Exception("wrong cryptor!")));
+                this._event.fireEvent(new EventData(this, "error", new Exception("wrong cryptor!")));
                 return;
             }
         }
@@ -307,13 +307,13 @@ public class FPClient {
             if (data.msgpackPayload().length != 1) {
 
                 this._cyr.setCryptoed(false);
-                this._event.fireEvent(new FPEvent(this, "error", new Exception("wrong cryptor!")));
+                this._event.fireEvent(new EventData(this, "error", new Exception("wrong cryptor!")));
                 return;
             }
         }
 
         this._intervalID = 0;
-        this._event.fireEvent(new FPEvent(this, "connect"));
+        this._event.fireEvent(new EventData(this, "connect"));
     }
 
     private void onConnect() {
@@ -330,7 +330,7 @@ public class FPClient {
         this._callback.removeCallback();
         this._cyr.clear();
 
-        this._event.fireEvent(new FPEvent(this, "close"));
+        this._event.fireEvent(new EventData(this, "close"));
 
         if (this._autoReconnect) {
 
@@ -452,7 +452,7 @@ public class FPClient {
     private void onError(Exception ex) {
 
         ex.printStackTrace();
-        this._event.fireEvent(new FPEvent(this, "error", ex));
+        this._event.fireEvent(new EventData(this, "error", ex));
     }
 
     private void onSecond(long timestamp) {
@@ -506,20 +506,20 @@ public class FPClient {
 
 class SyncCallbak implements FPCallback.ICallback {
 
-    private FPCallback _fpcb;
+    private CallbackData _cbd;
 
     @Override
-    public void callback(FPCallback fpcb) {
+    public void callback(CallbackData cbd) {
 
         synchronized (this) {
 
-            this._fpcb = fpcb;
+            this._cbd = cbd;
             this.notifyAll();
         }
     }
 
-    public FPCallback getReturn() {
+    public CallbackData getReturn() {
 
-        return this._fpcb;
+        return this._cbd;
     }
 }

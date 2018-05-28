@@ -1,8 +1,8 @@
 package com.fpnn.nio;
 
 import com.fpnn.FPSocket;
+import com.fpnn.event.EventData;
 import com.fpnn.event.FPEvent;
-import com.fpnn.event.FPEventManager;
 
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
@@ -22,7 +22,7 @@ public class NIOCore implements Runnable {
 
         try {
 
-            this._event = new FPEventManager();
+            this._event = new FPEvent();
             this._selector = this.initSelector();
             ThreadPool.getInstance().execute(this);
         } catch (IOException ex) {
@@ -41,13 +41,13 @@ public class NIOCore implements Runnable {
         return Singleton.INSTANCE;
     }
 
-    private FPEventManager _event;
+    private FPEvent _event;
     private Selector _selector;
 
     private Map _fpsockData = new HashMap();
     private List _pendingChanges = new LinkedList();
 
-    public FPEventManager getEvent() {
+    public FPEvent getEvent() {
 
         return this._event;
     }
@@ -267,7 +267,7 @@ public class NIOCore implements Runnable {
         synchronized (this._fpsockData) {
 
             long ts = this.getTimestamp();
-            this._event.fireEvent(new FPEvent(this, "second", ts));
+            this._event.fireEvent(new EventData(this, "second", ts));
 
             Iterator<FPSocket> iterator = this._fpsockData.values().iterator();
             while (iterator.hasNext()) {

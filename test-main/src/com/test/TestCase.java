@@ -2,8 +2,10 @@ package com.test;
 
 import com.fpnn.FPClient;
 import com.fpnn.FPData;
+import com.fpnn.callback.CallbackData;
 import com.fpnn.callback.FPCallback;
 import com.fpnn.encryptor.FPEncryptor;
+import com.fpnn.event.EventData;
 import com.fpnn.event.FPEvent;
 import com.fpnn.nio.ThreadPool;
 
@@ -26,7 +28,7 @@ public class TestCase {
         FPEvent.IListener listener = new FPEvent.IListener() {
 
             @Override
-            public void fpEvent(FPEvent event) {
+            public void fpEvent(EventData event) {
 
                 switch (event.getType()) {
                     case "connect":
@@ -130,16 +132,16 @@ public class TestCase {
         _client.sendQuest(data, new FPCallback.ICallback() {
 
             @Override
-            public void callback(FPCallback fpcb) {
+            public void callback(CallbackData cbd) {
 
-                FPData data = fpcb.getData();
+                FPData data = cbd.getData();
 
                 if (data != null) {
 
                     System.out.println(data.msgpackPayload());
                 } else {
 
-                    fpcb.getException().printStackTrace();
+                    cbd.getException().printStackTrace();
                 }
             }
         });
