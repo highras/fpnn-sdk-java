@@ -5,9 +5,14 @@ import com.fpnn.event.FPEvent;
 
 public class FPProcessor {
 
+    public interface IAnswer {
+
+        void sendAnswer(Object payload, boolean exception);
+    }
+
     public interface IProcessor {
 
-        void service(FPData data, FPClient.IAnswer answer);
+        void service(FPData data, IAnswer answer);
 
         void onSecond(long timestamp);
     }
@@ -30,7 +35,7 @@ public class FPProcessor {
         this._processor = processor;
     }
 
-    public void service(FPData data, FPClient.IAnswer answer) {
+    public void service(FPData data, IAnswer answer) {
 
         if (this._processor == null) {
 
@@ -39,7 +44,7 @@ public class FPProcessor {
             this._processor = new IProcessor() {
 
                 @Override
-                public void service(FPData data, FPClient.IAnswer answer) {
+                public void service(FPData data, IAnswer answer) {
 
                     if (data.getFlag() == 0) {
 

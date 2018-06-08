@@ -14,11 +14,6 @@ import java.nio.channels.SocketChannel;
 
 public class FPClient {
 
-    public interface IAnswer {
-
-        void sendAnswer(Object payload, boolean exception);
-    }
-
     public interface IKeyData {
 
         FPData getKeyData(FPEncryptor encryptor);
@@ -412,7 +407,7 @@ public class FPClient {
 
         final FPClient self = this;
         final FPData fQuest = quest;
-        this._psr.service(quest, new IAnswer() {
+        this._psr.service(quest, new FPProcessor.IAnswer() {
 
             @Override
             public void sendAnswer(Object payload, boolean exception) {

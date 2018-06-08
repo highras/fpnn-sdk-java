@@ -27,7 +27,7 @@ public class FPCallback {
         synchronized (this._exMap) {
 
             int ts = timeout <= 0 ? FPConfig.SEND_TIMEOUT : timeout;
-            long expire = ts + Calendar.getInstance().getTimeInMillis();
+            long expire = ts + System.currentTimeMillis();
             this._exMap.put(key, expire);
         }
     }
