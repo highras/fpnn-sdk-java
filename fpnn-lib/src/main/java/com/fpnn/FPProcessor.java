@@ -15,6 +15,8 @@ public class FPProcessor {
         void service(FPData data, IAnswer answer);
 
         void onSecond(long timestamp);
+
+        void setEvent(FPEvent event);
     }
 
     private IProcessor _processor;
@@ -33,6 +35,7 @@ public class FPProcessor {
     public void setProcessor(IProcessor processor) {
 
         this._processor = processor;
+        this._processor.setEvent(this._event);
     }
 
     public void service(FPData data, IAnswer answer) {
@@ -43,18 +46,26 @@ public class FPProcessor {
 
             this._processor = new IProcessor() {
 
+                FPEvent event;
+
                 @Override
                 public void service(FPData data, IAnswer answer) {
 
                     if (data.getFlag() == 0) {
 
-                        self._event.fireEvent(new EventData(this, data.getMethod(), data.jsonPayload()));
+                        this.event .fireEvent(new EventData(this, data.getMethod(), data.jsonPayload()));
                     }
 
                     if (data.getFlag() == 1) {
 
-                        self._event.fireEvent(new EventData(this, data.getMethod(), data.msgpackPayload()));
+                        this.event .fireEvent(new EventData(this, data.getMethod(), data.msgpackPayload()));
                     }
+                }
+
+                @Override
+                public void setEvent(FPEvent event) {
+
+                    this.event = event;
                 }
 
                 @Override

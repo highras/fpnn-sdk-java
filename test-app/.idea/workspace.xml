@@ -37,7 +37,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/java/com/test/TestCase.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="367">
-              <caret line="142" column="0" lean-forward="true" selection-start-line="142" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
+              <caret line="142" column="0" lean-forward="false" selection-start-line="142" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -50,14 +50,6 @@
               <caret line="510" column="27" lean-forward="false" selection-start-line="510" selection-start-column="27" selection-end-line="510" selection-end-column="27" />
               <folding>
                 <marker date="1528266455492" expanded="true" signature="9702:10342" ph="{...}" />
-                <marker date="1528266455492" expanded="true" signature="9712:10334" ph="{...}" />
-                <marker date="1528266455492" expanded="true" signature="9807:10324" ph="{...}" />
-                <marker date="1528266455492" expanded="true" signature="10733:11273" ph="{...}" />
-                <marker date="1528266455492" expanded="true" signature="11313:11349" ph="{...}" />
-                <marker date="1528266455492" expanded="true" signature="11380:11505" ph="{...}" />
-                <marker date="1528266455492" expanded="true" signature="11559:11833" ph="{...}" />
-                <marker date="1528266455492" expanded="true" signature="11651:11759" ph="{...}" />
-                <marker date="1528266455492" expanded="true" signature="11797:11831" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -2422,7 +2414,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="y" value="22" />
     <option name="width" value="1379" />
     <option name="height" value="878" />
@@ -2442,8 +2434,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
+      <pane id="ProjectPane" />
       <pane id="AndroidView">
         <subPane>
           <expand>
@@ -2456,7 +2447,8 @@
         </subPane>
       </pane>
       <pane id="Scratches" />
-      <pane id="ProjectPane" />
+      <pane id="Scope" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -2630,8 +2622,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="22" width="1379" height="878" extended-state="0" />
-    <editor active="true" />
+    <frame x="0" y="22" width="1376" height="878" extended-state="6" />
     <layout>
       <window_info id="Android Profiler" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -2647,7 +2638,7 @@
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24906507" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24887556" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Build" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33077905" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -2674,6 +2665,32 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/main/java/com/test/TestActivity.java">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="14" column="0" lean-forward="false" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../fpnn-lib/src/main/java/com/fpnn/FPClient.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="7515">
+          <caret line="510" column="27" lean-forward="false" selection-start-line="510" selection-start-column="27" selection-end-line="510" selection-end-column="27" />
+          <folding>
+            <marker date="1528266455492" expanded="true" signature="9702:10342" ph="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/test/TestCase.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1950">
+          <caret line="142" column="0" lean-forward="true" selection-start-line="142" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/test/TestActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
@@ -2686,14 +2703,6 @@
           <caret line="515" column="27" lean-forward="false" selection-start-line="515" selection-start-column="27" selection-end-line="515" selection-end-column="27" />
           <folding>
             <marker date="1528266455492" expanded="true" signature="9702:10342" ph="{...}" />
-            <marker date="1528266455492" expanded="true" signature="9712:10334" ph="{...}" />
-            <marker date="1528266455492" expanded="true" signature="9807:10324" ph="{...}" />
-            <marker date="1528266455492" expanded="true" signature="10733:11273" ph="{...}" />
-            <marker date="1528266455492" expanded="true" signature="11313:11349" ph="{...}" />
-            <marker date="1528266455492" expanded="true" signature="11380:11505" ph="{...}" />
-            <marker date="1528266455492" expanded="true" signature="11559:11833" ph="{...}" />
-            <marker date="1528266455492" expanded="true" signature="11651:11759" ph="{...}" />
-            <marker date="1528266455492" expanded="true" signature="11797:11831" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -2832,14 +2841,6 @@
           <caret line="510" column="27" lean-forward="false" selection-start-line="510" selection-start-column="27" selection-end-line="510" selection-end-column="27" />
           <folding>
             <marker date="1528266455492" expanded="true" signature="9702:10342" ph="{...}" />
-            <marker date="1528266455492" expanded="true" signature="9712:10334" ph="{...}" />
-            <marker date="1528266455492" expanded="true" signature="9807:10324" ph="{...}" />
-            <marker date="1528266455492" expanded="true" signature="10733:11273" ph="{...}" />
-            <marker date="1528266455492" expanded="true" signature="11313:11349" ph="{...}" />
-            <marker date="1528266455492" expanded="true" signature="11380:11505" ph="{...}" />
-            <marker date="1528266455492" expanded="true" signature="11559:11833" ph="{...}" />
-            <marker date="1528266455492" expanded="true" signature="11651:11759" ph="{...}" />
-            <marker date="1528266455492" expanded="true" signature="11797:11831" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -2847,7 +2848,7 @@
     <entry file="file://$PROJECT_DIR$/src/main/java/com/test/TestCase.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="367">
-          <caret line="142" column="0" lean-forward="true" selection-start-line="142" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
+          <caret line="142" column="0" lean-forward="false" selection-start-line="142" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
           <folding />
         </state>
       </provider>
