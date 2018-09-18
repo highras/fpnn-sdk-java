@@ -85,12 +85,21 @@ public class FPSocket {
                     }
 
                     NIOCore.getInstance().register(self, socket, SelectionKey.OP_CONNECT);
-                } catch (IOException ex) {
+                } catch (Exception ex) {
 
                     self.close(ex);
                 }
             }
         });
+    }
+
+    public void destroy() {
+
+        this._event.removeListener();
+        this._recvData = null;
+
+        this.close(null);
+        this.onClose(null);
     }
 
     public void write(ByteBuffer buf) {

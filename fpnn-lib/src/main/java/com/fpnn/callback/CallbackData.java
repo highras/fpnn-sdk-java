@@ -1,6 +1,7 @@
 package com.fpnn.callback;
 
 import com.fpnn.FPData;
+import com.fpnn.FPPackage;
 
 import java.util.Map;
 
@@ -45,14 +46,16 @@ public class CallbackData {
     }
 
 
-    public void checkException(Map data) {
+    public void checkException(boolean isAnswerException, Map data) {
 
-        if (this._exception == null) {
+        if (data == null) {
 
-            if (data == null) {
+            this._exception = new Exception("data is null!");
+        }
 
-                this._exception = new Exception("data is null!");
-            } else if (data.containsKey("code") && data.containsKey("ex")) {
+        if (this._exception == null && isAnswerException) {
+
+            if (data.containsKey("code") && data.containsKey("ex")) {
 
                 this._exception = new Exception("code: ".concat(data.get("code").toString()).concat(", ex: ").concat(data.get("ex").toString()));
             }

@@ -8,6 +8,7 @@ import com.fpnn.event.FPEvent;
 import com.fpnn.nio.NIOCore;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
@@ -34,7 +35,7 @@ public class FPClient {
     private FPProcessor _psr = new FPProcessor();
     private FPCallback _callback = new FPCallback();
 
-    private long _intervalID = 0;
+    private FPEvent.IListener _secondListener = null;
 
     public FPClient(String endpoint, boolean autoReconnect, int connectionTimeout) {
 
@@ -57,15 +58,23 @@ public class FPClient {
         this._autoReconnect = autoReconnect;
 
 
-        final FPClient self = this;
-        NIOCore.getInstance().getEvent().addListener("second", new FPEvent.IListener() {
+        final WeakReference<FPClient> weakSelf = new WeakReference<FPClient>(this);
+
+        this._secondListener = new FPEvent.IListener() {
 
             @Override
             public void fpEvent(EventData event) {
 
-                self.onSecond(event.getTimestamp());
+                if (weakSelf.get() != null) {
+
+                    weakSelf.get().onSecond(event.getTimestamp());
+                }
             }
-        });
+        };
+
+        NIOCore.getInstance().getEvent().addListener("second", this._secondListener);
+
+        final FPClient self = this;
 
         this._sock = new FPSocket(new FPSocket.IRecvData() {
 
@@ -108,6 +117,11 @@ public class FPClient {
     public FPProcessor getProcessor() {
 
         return this._psr;
+    }
+
+    public FPPackage getPackage() {
+
+        return this._pkg;
     }
 
     public FPSocket sock() {
@@ -162,6 +176,24 @@ public class FPClient {
     public void close(Exception ex) {
 
         this._sock.close(ex);
+    }
+
+    public void destroy() {
+
+        this._autoReconnect = false;
+
+        this._event.removeListener();
+
+        this._psr.destroy();
+        this._sock.destroy();
+
+        this.onClose();
+
+        if (this._secondListener != null) {
+
+            NIOCore.getInstance().getEvent().removeListener("second", this._secondListener);
+            this._secondListener = null;
+        }
     }
 
     public void sendQuest(FPData data) {
@@ -281,7 +313,6 @@ public class FPClient {
             return;
         }
 
-        this._intervalID = 0;
         this._event.fireEvent(new EventData(this, "connect"));
     }
 
@@ -307,7 +338,6 @@ public class FPClient {
             }
         }
 
-        this._intervalID = 0;
         this._event.fireEvent(new EventData(this, "connect"));
     }
 
@@ -452,26 +482,23 @@ public class FPClient {
 
     private void onSecond(long timestamp) {
 
+        this._event.fireEvent(new EventData(this, "second", timestamp));
+
         this._psr.onSecond(timestamp);
         this._callback.onSecond(timestamp);
+    }
 
-        if (this._intervalID == 0) {
+    private synchronized int addSeq() {
 
-            return;
-        }
+        return ++this._seq;
+    }
 
+    private void reConnect() {
 
         if (this.hasConnect()) {
 
             return;
         }
-
-        if (timestamp - this._intervalID < 100) {
-
-            return;
-        }
-
-        this._intervalID = timestamp;
 
         if (this._cyr.isCrypto()) {
 
@@ -483,19 +510,6 @@ public class FPClient {
         }
 
         this.connect();
-    }
-
-    private synchronized int addSeq() {
-
-        return ++this._seq;
-    }
-
-    private void reConnect() {
-
-        if (this._intervalID == 0) {
-
-            this._intervalID = NIOCore.getInstance().getTimestamp();
-        }
     }
 }
 

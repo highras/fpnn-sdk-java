@@ -16,26 +16,26 @@ public class FPProcessor {
 
         void onSecond(long timestamp);
 
-        void setEvent(FPEvent event);
+        FPEvent getEvent();
     }
 
     private IProcessor _processor;
-    private FPEvent _event;
 
-    public FPProcessor() {
-
-        this._event = new FPEvent();
-    }
+    public FPProcessor() {}
 
     public FPEvent getEvent() {
 
-        return this._event;
+        if (this._processor != null) {
+
+            return this._processor.getEvent();
+        }
+
+        return null;
     }
 
     public void setProcessor(IProcessor processor) {
 
         this._processor = processor;
-        this._processor.setEvent(this._event);
     }
 
     public void service(FPData data, IAnswer answer) {
@@ -46,7 +46,7 @@ public class FPProcessor {
 
             this._processor = new IProcessor() {
 
-                FPEvent event;
+                FPEvent event = new FPEvent();
 
                 @Override
                 public void service(FPData data, IAnswer answer) {
@@ -63,9 +63,9 @@ public class FPProcessor {
                 }
 
                 @Override
-                public void setEvent(FPEvent event) {
+                public FPEvent getEvent() {
 
-                    this.event = event;
+                    return this.event;
                 }
 
                 @Override
@@ -83,6 +83,16 @@ public class FPProcessor {
         if (this._processor != null) {
 
             this._processor.onSecond(timestamp);
+        }
+    }
+
+    public void destroy() {
+
+        FPEvent event = this.getEvent();
+
+        if (event != null) {
+
+            event.removeListener();
         }
     }
 }

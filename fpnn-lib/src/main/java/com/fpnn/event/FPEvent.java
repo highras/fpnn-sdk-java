@@ -32,12 +32,7 @@ public class FPEvent {
 
     public void fireEvent(EventData event) {
 
-        List queue;
-
-        synchronized (this._listeners) {
-
-            queue = (List) this._listeners.get(event.getType());
-        }
+        List queue = (List) this._listeners.get(event.getType());
 
         if (queue != null && queue.size() > 0) {
 
@@ -49,12 +44,15 @@ public class FPEvent {
                 @Override
                 public void run() {
 
-                    Iterator<IListener> iterator = fQueue.iterator();
+                    synchronized (fQueue) {
 
-                    while (iterator.hasNext()) {
+                        Iterator<IListener> iterator = fQueue.iterator();
 
-                        IListener lisr = iterator.next();
-                        lisr.fpEvent(fEvent);
+                        while (iterator.hasNext()) {
+
+                            IListener lisr = iterator.next();
+                            lisr.fpEvent(fEvent);
+                        }
                     }
                 }
             });

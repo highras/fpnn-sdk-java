@@ -94,4 +94,18 @@ public class EventData extends EventObject {
         this._type = type;
         this._payload = payload;
     }
+
+    private boolean _retry;
+
+    public boolean hasRetry() {
+
+        return this._retry;
+    }
+
+    public EventData(Object source, String type, boolean retry) {
+
+        super(source);
+        this._type = type;
+        this._retry = retry;
+    }
 }

@@ -53,6 +53,7 @@ public class NIOCore implements Runnable {
     }
 
     public long getTimestamp() {
+
         return System.currentTimeMillis();
     }
 
