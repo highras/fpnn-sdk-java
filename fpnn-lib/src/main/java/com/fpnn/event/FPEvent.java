@@ -32,21 +32,21 @@ public class FPEvent {
 
     public void fireEvent(EventData event) {
 
-        List queue = (List) this._listeners.get(event.getType());
+        final EventData fEvent = event;
+        final Map fListeners = this._listeners;
 
-        if (queue != null && queue.size() > 0) {
+        ThreadPool.getInstance().execute(new Runnable() {
 
-            final List fQueue = queue;
-            final EventData fEvent = event;
+            @Override
+            public void run() {
 
-            ThreadPool.getInstance().execute(new Runnable() {
+                synchronized (fListeners) {
 
-                @Override
-                public void run() {
+                    List queue = (List) fListeners.get(fEvent.getType());
 
-                    synchronized (fQueue) {
+                    if (queue != null && queue.size() > 0) {
 
-                        Iterator<IListener> iterator = fQueue.iterator();
+                        Iterator<IListener> iterator = queue.iterator();
 
                         while (iterator.hasNext()) {
 
@@ -55,8 +55,8 @@ public class FPEvent {
                         }
                     }
                 }
-            });
-        }
+            }
+        });
     }
 
     public void removeListener() {

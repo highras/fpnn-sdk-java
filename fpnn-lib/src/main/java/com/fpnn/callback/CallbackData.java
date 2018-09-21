@@ -32,6 +32,17 @@ public class CallbackData {
         this._exception = ex;
     }
 
+    private long _mid = 0;
+
+    public long getMid() {
+
+        return this._mid;
+    }
+
+    public void setMid(long value) {
+
+        this._mid = value;
+    }
 
     private Object _payload = null;
 
