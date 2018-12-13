@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Gradle: __local_aars__:/Users/dixun/Documents/repo/infra-fpnn-sdk/Android/test-app/libs/msgpack-core-0.8.16.jar:unspecified@jar">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/libs/msgpack-core-0.8.16.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
