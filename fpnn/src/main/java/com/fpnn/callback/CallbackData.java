@@ -59,7 +59,7 @@ public class CallbackData {
 
     public void checkException(boolean isAnswerException, Map data) {
 
-        if (data == null) {
+        if (data == null && this._exception == null) {
 
             this._exception = new Exception("data is null!");
         }
