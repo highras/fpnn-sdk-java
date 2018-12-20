@@ -22,6 +22,7 @@ public class FPClient {
 
     private int _seq = 0;
     private int _timeout = 30 * 1000;
+    private boolean _isClose;
     private boolean _autoReconnect;
 
     private FPSocket _sock;
@@ -159,6 +160,7 @@ public class FPClient {
 
     public void connect() {
 
+        this._isClose = false;
         this._sock.open();
     }
 
@@ -170,6 +172,7 @@ public class FPClient {
 
     public void close() {
 
+        this._isClose = true;
         this._sock.close(null);
     }
 
@@ -355,7 +358,7 @@ public class FPClient {
         this._callback.removeCallback();
         this._cyr.clear();
 
-        this._event.fireEvent(new EventData(this, "close"));
+        this._event.fireEvent(new EventData(this, "close", !this._isClose && this._autoReconnect));
 
         if (this._autoReconnect) {
 
@@ -494,6 +497,11 @@ public class FPClient {
     }
 
     private void reConnect() {
+
+        if (this._isClose) {
+
+            return;
+        }
 
         if (this.hasConnect()) {
 

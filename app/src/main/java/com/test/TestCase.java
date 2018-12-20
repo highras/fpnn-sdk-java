@@ -35,7 +35,7 @@ public class TestCase {
                         self.onConnect();
                         break;
                     case "close":
-                        self.onClose();
+                        self.onClose(event.hasRetry());
                         break;
                     case "error":
                         self.onError(event.getException());
@@ -150,9 +150,9 @@ public class TestCase {
         });
     }
 
-    private void onClose() {
+    private void onClose(boolean hasRetry) {
 
-        System.out.println(new String("Closed!"));
+        System.out.println(new String("Closed! retry? " + hasRetry));
     }
 
     private void onError(Exception ex) {
