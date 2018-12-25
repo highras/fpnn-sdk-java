@@ -68,7 +68,10 @@ public class CallbackData {
 
             if (data.containsKey("code") && data.containsKey("ex")) {
 
-                this._exception = new Exception("code: ".concat(data.get("code").toString()).concat(", ex: ").concat(data.get("ex").toString()));
+                String code = "code: ".concat(data.get("code").toString());
+                String ex = "ex: ".concat(data.get("ex").toString());
+
+                this._exception = new Exception(code.concat(", ").concat(ex));
             }
         }
 
