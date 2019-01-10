@@ -90,9 +90,9 @@ public class FPProcessor {
 
         FPEvent event = this.getEvent();
 
-        if (event != null) {
-
-            event.removeListener();
-        }
+//        if (event != null) {
+//
+//            event.removeListener();
+//        }
     }
 }
