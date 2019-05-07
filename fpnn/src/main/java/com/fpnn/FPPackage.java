@@ -171,7 +171,7 @@ public class FPPackage {
         System.arraycopy(bytes, 0, bs, 0, bs.length);
 
         peek.setMagic(bs);
-        peek.setVersion(FPConfig.FPNN_VERSION[bytes[4]]);
+        peek.setVersion(Arrays.binarySearch(FPConfig.FPNN_VERSION, bytes[4]));
 
         if (bytes[5] == FPConfig.FP_FLAG[0]) {
 
@@ -183,7 +183,7 @@ public class FPPackage {
             peek.setFlag(1);
         }
 
-        peek.setMtype(FPConfig.FP_MESSAGE_TYPE[bytes[6]]);
+        peek.setMtype(Arrays.binarySearch(FPConfig.FP_MESSAGE_TYPE, bytes[6]));
         peek.setSS(bytes[7]);
 
         bs = new byte[4];

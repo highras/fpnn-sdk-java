@@ -13,7 +13,6 @@ public class FPCallback {
         void callback(CallbackData cbd);
     }
 
-
     private Map _cbMap = new HashMap();
     private Map _exMap = new HashMap();
 
@@ -42,51 +41,51 @@ public class FPCallback {
 
     public void execCallback(String key, FPData data) {
 
-        synchronized (this._cbMap) {
+        FPCallback.ICallback cb = (FPCallback.ICallback) this._cbMap.get(key);
 
-            FPCallback.ICallback cb = (FPCallback.ICallback) this._cbMap.get(key);
+        if (cb != null) {
 
-            if (cb != null) {
+            synchronized (this._cbMap) {
 
                 this._cbMap.remove(key);
-
-                final FPCallback.ICallback fcb = cb;
-                final FPData fData = data;
-
-                ThreadPool.getInstance().execute(new Runnable() {
-
-                    @Override
-                    public void run() {
-
-                        fcb.callback(new CallbackData(fData));
-                    }
-                });
             }
+
+            final FPCallback.ICallback fcb = cb;
+            final FPData fData = data;
+
+            ThreadPool.getInstance().execute(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    fcb.callback(new CallbackData(fData));
+                }
+            });
         }
     }
 
     public void execCallback(String key, Exception ex) {
 
-        synchronized (this._cbMap) {
+        FPCallback.ICallback cb = (FPCallback.ICallback) this._cbMap.get(key);
 
-            FPCallback.ICallback cb = (FPCallback.ICallback) this._cbMap.get(key);
+        if (cb != null) {
 
-            if (cb != null) {
+            synchronized (this._cbMap) {
 
                 this._cbMap.remove(key);
-
-                final FPCallback.ICallback fcb = cb;
-                final Exception fex = ex;
-
-                ThreadPool.getInstance().execute(new Runnable() {
-
-                    @Override
-                    public void run() {
-
-                        fcb.callback(new CallbackData(fex));
-                    }
-                });
             }
+
+            final FPCallback.ICallback fcb = cb;
+            final Exception fex = ex;
+
+            ThreadPool.getInstance().execute(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    fcb.callback(new CallbackData(fex));
+                }
+            });
         }
     }
 

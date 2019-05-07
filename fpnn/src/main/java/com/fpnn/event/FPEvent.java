@@ -16,48 +16,46 @@ public class FPEvent {
 
     public void addListener(String type, IListener lisr) {
 
-        synchronized (this._listeners) {
+        List queue = (List) this._listeners.get(type);
 
-            List queue = (List) this._listeners.get(type);
+        if (queue == null) {
 
-            if (queue == null) {
+            queue = new ArrayList();
 
-                queue = new ArrayList();
+            synchronized (this._listeners) {
+
                 this._listeners.put(type, queue);
             }
-
-            queue.add(lisr);
         }
+
+        queue.add(lisr);
     }
 
     public void fireEvent(EventData event) {
 
-        synchronized (this._listeners) {
+        List queue = (List) this._listeners.get(event.getType());
 
-            List queue = (List) this._listeners.get(event.getType());
+        if (queue != null) {
 
-            if (queue != null) {
+            synchronized (queue) {
 
-                synchronized (queue) {
+                final EventData fEvent = event;
+                Iterator<IListener> iterator = queue.iterator();
 
-                    final EventData fEvent = event;
-                    Iterator<IListener> iterator = queue.iterator();
+                while (iterator.hasNext()) {
 
-                    while (iterator.hasNext()) {
+                    final IListener fLisr = iterator.next();
 
-                        final IListener fLisr = iterator.next();
+                    if (fLisr != null) {
 
-                        if (fLisr != null) {
+                        ThreadPool.getInstance().execute(new Runnable() {
 
-                            ThreadPool.getInstance().execute(new Runnable() {
+                            @Override
+                            public void run() {
 
-                                @Override
-                                public void run() {
-
-                                    fLisr.fpEvent(fEvent);
-                                }
-                            });
-                        }
+                                fLisr.fpEvent(fEvent);
+                            }
+                        });
                     }
                 }
             }
@@ -82,21 +80,18 @@ public class FPEvent {
 
     public void removeListener(String type, IListener lisr) {
 
-        synchronized (this._listeners) {
+        List queue = (List) this._listeners.get(type);
 
-            List queue = (List) this._listeners.get(type);
+        if (queue == null) {
 
-            if (queue == null) {
+            return;
+        }
 
-                return;
-            }
+        int index = queue.indexOf(lisr);
 
-            int index = queue.indexOf(lisr);
+        if (index != -1) {
 
-            if (index != -1) {
-
-                queue.remove(index);
-            }
+            queue.remove(index);
         }
     }
 }

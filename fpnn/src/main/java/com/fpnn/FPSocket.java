@@ -104,14 +104,11 @@ public class FPSocket {
 
     public void write(ByteBuffer buf) {
 
-        synchronized (this._sendQueue) {
+        this._sendQueue.add(buf);
 
-            this._sendQueue.add(buf);
+        if (this.isOpen()) {
 
-            if (this.isOpen()) {
-
-                NIOCore.getInstance().register(this, this._socket, SelectionKey.OP_WRITE | SelectionKey.OP_READ);
-            }
+            NIOCore.getInstance().register(this, this._socket, SelectionKey.OP_WRITE | SelectionKey.OP_READ);
         }
     }
 
@@ -177,52 +174,53 @@ public class FPSocket {
 
     public void onWrite(SelectionKey key) throws IOException {
 
-        synchronized (this._sendQueue) {
+        if (this._sendBuffer == null && !this._sendQueue.isEmpty()) {
 
-            if (this._sendBuffer == null && !this._sendQueue.isEmpty()) {
+            this._sendBuffer = (ByteBuffer) this._sendQueue.get(0);
+            this._sendQueue.remove(0);
 
-                this._sendBuffer = (ByteBuffer) this._sendQueue.get(0);
+            if (this._sendBuffer != null) {
+
                 this._sendBuffer.flip();
-                this._sendQueue.remove(0);
             }
+        }
 
-            if (this._sendBuffer == null) {
+        if (this._sendBuffer == null) {
 
-                NIOCore.getInstance().register(this, this._socket, SelectionKey.OP_READ);
+            NIOCore.getInstance().register(this, this._socket, SelectionKey.OP_READ);
+            return;
+        }
+
+        try {
+
+            int i = this._socket.write(this._sendBuffer);
+        } catch (Exception ex) {
+
+            if (ex instanceof IOException) {
+
+                throw (ex);
+            } else {
+
+                this.close(ex);
                 return;
             }
+        }
 
-            try {
+        if (this._sendBuffer.hasRemaining()) {
 
-                int i = this._socket.write(this._sendBuffer);
-            } catch (Exception ex) {
+            NIOCore.getInstance().register(this, this._socket, SelectionKey.OP_WRITE | SelectionKey.OP_READ);
+            return;
+        }
 
-                if (ex instanceof IOException) {
+        this._sendBuffer.clear();
+        this._sendBuffer = null;
 
-                    throw (ex);
-                } else {
+        if (this._sendQueue.isEmpty()) {
 
-                    this.close(ex);
-                    return;
-                }
-            }
+            NIOCore.getInstance().register(this, this._socket, SelectionKey.OP_READ);
+        }else{
 
-            if (this._sendBuffer.hasRemaining()) {
-
-                NIOCore.getInstance().register(this, this._socket, SelectionKey.OP_WRITE | SelectionKey.OP_READ);
-                return;
-            }
-
-            this._sendBuffer.clear();
-            this._sendBuffer = null;
-
-            if (this._sendQueue.isEmpty()) {
-
-                NIOCore.getInstance().register(this, this._socket, SelectionKey.OP_READ);
-            }else{
-
-                NIOCore.getInstance().register(this, this._socket, SelectionKey.OP_WRITE | SelectionKey.OP_READ);
-            }
+            NIOCore.getInstance().register(this, this._socket, SelectionKey.OP_WRITE | SelectionKey.OP_READ);
         }
     }
 
