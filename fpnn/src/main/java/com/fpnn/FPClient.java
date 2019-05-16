@@ -64,11 +64,11 @@ public class FPClient {
         this._secondListener = new FPEvent.IListener() {
 
             @Override
-            public void fpEvent(EventData event) {
+            public void fpEvent(EventData evd) {
 
                 if (weakSelf.get() != null) {
 
-                    weakSelf.get().onSecond(event.getTimestamp());
+                    weakSelf.get().onSecond(evd.getTimestamp());
                 }
             }
         };
@@ -86,28 +86,32 @@ public class FPClient {
             }
         }, host, port, this._timeout);
 
-        FPEvent.IListener listener = new FPEvent.IListener() {
+        this._sock.getEvent().addListener("connect", new FPEvent.IListener() {
 
             @Override
-            public void fpEvent(EventData event) {
+            public void fpEvent(EventData evd) {
 
-                switch (event.getType()) {
-                    case "connect":
-                        self.onConnect();
-                        break;
-                    case "close":
-                        self.onClose();
-                        break;
-                    case "error":
-                        self.onError(event.getException());
-                        break;
-                }
+                self.onConnect();
             }
-        };
+        });
 
-        this._sock.getEvent().addListener("connect", listener);
-        this._sock.getEvent().addListener("close", listener);
-        this._sock.getEvent().addListener("error", listener);
+        this._sock.getEvent().addListener("close", new FPEvent.IListener() {
+
+            @Override
+            public void fpEvent(EventData evd) {
+
+                self.onClose();
+            }
+        });
+
+        this._sock.getEvent().addListener("error", new FPEvent.IListener() {
+
+            @Override
+            public void fpEvent(EventData evd) {
+
+                self.onError(evd.getException());
+            }
+        });
     }
 
     public FPEvent getEvent() {
@@ -479,7 +483,6 @@ public class FPClient {
 
     private void onError(Exception ex) {
 
-        ex.printStackTrace();
         this._event.fireEvent(new EventData(this, "error", ex));
     }
 

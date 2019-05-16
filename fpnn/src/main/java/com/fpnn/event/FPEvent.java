@@ -8,7 +8,7 @@ public class FPEvent {
 
     public interface IListener extends EventListener {
 
-        void fpEvent(EventData event);
+        void fpEvent(EventData evd);
     }
 
 
@@ -31,15 +31,15 @@ public class FPEvent {
         queue.add(lisr);
     }
 
-    public void fireEvent(EventData event) {
+    public void fireEvent(EventData evd) {
 
-        List queue = (List) this._listeners.get(event.getType());
+        List queue = (List) this._listeners.get(evd.getType());
 
         if (queue != null) {
 
             synchronized (queue) {
 
-                final EventData fEvent = event;
+                final EventData fevd = evd;
                 Iterator<IListener> iterator = queue.iterator();
 
                 while (iterator.hasNext()) {
@@ -53,7 +53,7 @@ public class FPEvent {
                             @Override
                             public void run() {
 
-                                fLisr.fpEvent(fEvent);
+                                fLisr.fpEvent(fevd);
                             }
                         });
                     }

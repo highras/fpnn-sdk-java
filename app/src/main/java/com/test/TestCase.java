@@ -25,29 +25,33 @@ public class TestCase {
         _client = new FPClient("52.83.245.22", 13013, true, 5 * 1000);
 
         final TestCase self = this;
-        FPEvent.IListener listener = new FPEvent.IListener() {
+
+        _client.getEvent().addListener("connect", new FPEvent.IListener() {
 
             @Override
-            public void fpEvent(EventData event) {
+            public void fpEvent(EventData evd) {
 
-                switch (event.getType()) {
-                    case "connect":
-                        self.onConnect();
-                        break;
-                    case "close":
-                        self.onClose(event.hasRetry());
-                        break;
-                    case "error":
-                        self.onError(event.getException());
-                        break;
-                }
-
+                self.onConnect();
             }
-        };
+        });
 
-        _client.getEvent().addListener("connect", listener);
-        _client.getEvent().addListener("close", listener);
-        _client.getEvent().addListener("error", listener);
+        _client.getEvent().addListener("close", new FPEvent.IListener() {
+
+            @Override
+            public void fpEvent(EventData evd) {
+
+                self.onError(evd.getException());
+            }
+        });
+
+        _client.getEvent().addListener("error", new FPEvent.IListener() {
+
+            @Override
+            public void fpEvent(EventData evd) {
+
+                self.onConnect();
+            }
+        });
 
         if (derKey != null && derKey.length > 0) {
 
