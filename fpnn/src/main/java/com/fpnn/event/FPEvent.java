@@ -1,5 +1,6 @@
 package com.fpnn.event;
 
+import com.fpnn.ErrorRecorder;
 import com.fpnn.nio.ThreadPool;
 
 import java.util.*;
@@ -53,7 +54,13 @@ public class FPEvent {
                             @Override
                             public void run() {
 
-                                fLisr.fpEvent(fevd);
+                                try {
+
+                                    fLisr.fpEvent(fevd);
+                                } catch(Exception ex) {
+
+                                    ErrorRecorder.getInstance().recordError(ex);
+                                }
                             }
                         });
                     }

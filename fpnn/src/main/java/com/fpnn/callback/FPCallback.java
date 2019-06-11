@@ -1,5 +1,6 @@
 package com.fpnn.callback;
 
+import com.fpnn.ErrorRecorder;
 import com.fpnn.FPConfig;
 import com.fpnn.FPData;
 import com.fpnn.nio.ThreadPool;
@@ -78,7 +79,13 @@ public class FPCallback {
             @Override
             public void run() {
 
-                fcb.callback(new CallbackData(fData));
+                try {
+
+                    fcb.callback(new CallbackData(fData));
+                } catch (Exception ex) {
+
+                    ErrorRecorder.getInstance().recordError(ex);
+                }
             }
         });
     }
@@ -117,7 +124,13 @@ public class FPCallback {
             @Override
             public void run() {
 
-                fcb.callback(new CallbackData(fex));
+                try {
+
+                    fcb.callback(new CallbackData(fex));
+                } catch (Exception ex) {
+
+                    ErrorRecorder.getInstance().recordError(ex);
+                }
             }
         });
     }

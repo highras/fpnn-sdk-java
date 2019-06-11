@@ -14,7 +14,14 @@ public class ThreadPool {
         void execute(Runnable runnable);
     }
 
+    private int _nThreads = FPConfig.MAX_THREAD_COUNT;
+
     private ThreadPool() {
+
+        if (this._nThreads <= 0) {
+
+            this._nThreads = Runtime.getRuntime().availableProcessors() * 2;
+        }
     }
 
     private static class Singleton {
@@ -27,30 +34,35 @@ public class ThreadPool {
         return ThreadPool.Singleton.INSTANCE;
     }
 
+    public int numThreads() {
+
+        return this._nThreads;
+    }
+
     private boolean _useTimerThread;
     private IThreadPool _threadPool = null;
 
-    public void setPool(IThreadPool value) throws Exception {
+    public synchronized void setPool(IThreadPool value) throws Exception {
 
-        synchronized (this) {
-            if (this._threadPool != null) {
+        if (this._threadPool != null) {
 
-                throw new Exception("ThreadPool has been up");
-            }
-
-            this._threadPool = value;
+            throw new Exception("ThreadPool has been up");
         }
+
+        this._threadPool = value;
     }
 
     public void execute(Runnable runnable) {
 
         if (this._threadPool == null) {
 
+            final int nThreads = this._nThreads;
+
             try{
 
                 this.setPool(new IThreadPool() {
 
-                    ExecutorService executor = Executors.newFixedThreadPool(FPConfig.MAX_THREAD_COUNT);
+                    ExecutorService executor = Executors.newFixedThreadPool(nThreads);
 
                     @Override
                     public void execute(Runnable runnable) {
@@ -67,31 +79,28 @@ public class ThreadPool {
         this._threadPool.execute(runnable);
     }
 
-    public IThreadPool threadPool() {
+    public IThreadPool getThreadPool() {
 
         return this._threadPool;
     }
 
-    public void startTimerThread() {
+    public synchronized void startTimerThread() {
 
-        synchronized (this) {
+        if (this._useTimerThread) {
 
-            if (this._useTimerThread) {
-
-                return;
-            }
-
-            this._useTimerThread = true;
-            ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-
-            executor.scheduleWithFixedDelay(new Runnable() {
-
-                @Override
-                public void run() {
-
-                    NIOCore.getInstance().checkSecond();
-                }
-            }, 0, 1000, TimeUnit.MILLISECONDS);
+            return;
         }
+
+        this._useTimerThread = true;
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+
+        executor.scheduleWithFixedDelay(new Runnable() {
+
+            @Override
+            public void run() {
+
+                NIOCore.getInstance().checkSecond();
+            }
+        }, 0, 1000, TimeUnit.MILLISECONDS);
     }
 }

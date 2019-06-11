@@ -12,7 +12,7 @@ public class FPConfig {
 
     public static final short READ_BUFFER_LEN = 12;
     public static final int SEND_TIMEOUT = 20 * 1000;
-    public static final short MAX_THREAD_COUNT = 4;
+    public static final short MAX_THREAD_COUNT = 0;    // default means 'Runtime.getRuntime().availableProcessors() * 2'
 
     private static byte[] definedVersion() {
 

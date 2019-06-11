@@ -104,7 +104,10 @@ public class FPSocket {
 
     public void write(ByteBuffer buf) {
 
-        this._sendQueue.add(buf);
+        synchronized (this._sendQueue) {
+
+            this._sendQueue.add(buf);
+        }
 
         if (this.isOpen()) {
 
@@ -176,8 +179,10 @@ public class FPSocket {
 
         if (this._sendBuffer == null && !this._sendQueue.isEmpty()) {
 
-            this._sendBuffer = (ByteBuffer) this._sendQueue.get(0);
-            this._sendQueue.remove(0);
+            synchronized (this._sendQueue) {
+
+                this._sendBuffer = (ByteBuffer) this._sendQueue.remove(0);
+            }
 
             if (this._sendBuffer != null) {
 
