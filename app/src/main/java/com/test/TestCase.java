@@ -1,5 +1,6 @@
 package com.test;
 
+import com.fpnn.ErrorRecorder;
 import com.fpnn.FPClient;
 import com.fpnn.FPData;
 import com.fpnn.callback.CallbackData;
@@ -40,7 +41,7 @@ public class TestCase {
             @Override
             public void fpEvent(EventData evd) {
 
-                self.onError(evd.getException());
+                self.onClose(evd.hasRetry());
             }
         });
 
@@ -49,7 +50,7 @@ public class TestCase {
             @Override
             public void fpEvent(EventData evd) {
 
-                self.onConnect();
+                self.onError(evd.getException());
             }
         });
 
@@ -75,7 +76,7 @@ public class TestCase {
                         packer.close();
                     } catch (IOException ex) {
 
-                        ex.printStackTrace();
+                        System.err.println(ex);
                     }
 
                     FPData data = new FPData();
@@ -127,7 +128,7 @@ public class TestCase {
             packer.close();
         } catch (IOException ex) {
 
-            ex.printStackTrace();
+            System.err.println(ex);
         }
 
         FPData data = new FPData();
@@ -148,7 +149,7 @@ public class TestCase {
                     System.out.println(data.msgpackPayload());
                 } else {
 
-                    cbd.getException().printStackTrace();
+                    System.err.println(cbd.getException());
                 }
             }
         });
@@ -161,6 +162,6 @@ public class TestCase {
 
     private void onError(Exception ex) {
 
-        ex.printStackTrace();
+        System.err.println(ex);
     }
 }

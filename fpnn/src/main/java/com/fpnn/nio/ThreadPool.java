@@ -1,5 +1,6 @@
 package com.fpnn.nio;
 
+import com.fpnn.ErrorRecorder;
 import com.fpnn.FPConfig;
 
 import java.util.concurrent.ExecutorService;
@@ -72,7 +73,7 @@ public class ThreadPool {
                 });
             } catch (Exception ex){
 
-                ex.printStackTrace();
+                ErrorRecorder.getInstance().recordError(ex);
             }
         }
 

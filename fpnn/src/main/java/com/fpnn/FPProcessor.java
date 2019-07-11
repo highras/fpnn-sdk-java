@@ -1,7 +1,10 @@
 package com.fpnn;
 
-import com.fpnn.event.EventData;
 import com.fpnn.event.FPEvent;
+import com.fpnn.nio.ThreadPool;
+
+import java.util.List;
+import java.util.ArrayList;
 
 public class FPProcessor {
 
@@ -13,9 +16,8 @@ public class FPProcessor {
     public interface IProcessor {
 
         void service(FPData data, IAnswer answer);
-
         void onSecond(long timestamp);
-
+        boolean hasPushService(String name);
         FPEvent getEvent();
     }
 
@@ -38,44 +40,103 @@ public class FPProcessor {
         this._processor = processor;
     }
 
+    private boolean _serviceAble;
+
+    private void startServiceThread() {
+
+        if (this._serviceAble) {
+
+            return;
+        }
+
+        this._serviceAble = true;
+
+        final FPProcessor self = this;
+
+        ThreadPool.getInstance().execute(new Runnable() {
+
+            @Override
+            public void run() {
+
+                try {
+
+                    while(self._serviceAble) {
+
+                        List<BaseService> list;
+
+                        synchronized (self._serviceCache) {
+
+                            self._serviceCache.wait();
+
+                            list = self._serviceCache;
+                            self._serviceCache = new ArrayList<BaseService>();
+                        }
+
+                        self.callService(list);
+                    }
+
+                } catch (Exception ex) {
+
+                    ErrorRecorder.getInstance().recordError(ex);
+                }
+            }
+        });
+    }
+
+    private void callService(List<BaseService> list) {
+
+        for(BaseService bs : list) {
+
+            if (bs != null) {
+
+                bs.service(this._processor);
+            }
+        }
+    }
+
+    private void stopServiceThread() {
+
+        synchronized (this._serviceCache) {
+
+            this._serviceCache.notify();
+        }
+
+        this._serviceAble = false;
+    }
+
+    private List<BaseService> _serviceCache = new ArrayList<BaseService>();
+
     public void service(FPData data, IAnswer answer) {
 
         if (this._processor == null) {
 
-            final FPProcessor self = this;
-
-            this._processor = new IProcessor() {
-
-                FPEvent event = new FPEvent();
-
-                @Override
-                public void service(FPData data, IAnswer answer) {
-
-                    if (data.getFlag() == 0) {
-
-                        this.event .fireEvent(new EventData(this, data.getMethod(), data.jsonPayload()));
-                    }
-
-                    if (data.getFlag() == 1) {
-
-                        this.event .fireEvent(new EventData(this, data.getMethod(), data.msgpackPayload()));
-                    }
-                }
-
-                @Override
-                public FPEvent getEvent() {
-
-                    return this.event;
-                }
-
-                @Override
-                public void onSecond(long timestamp) {
-
-                }
-            };
+            this._processor = new BaseProcessor();
         }
 
-        this._processor.service(data, answer);
+        if (!this._processor.hasPushService(data.getMethod())) {
+
+            if (data.getMethod() != "ping") {
+
+                return;
+            }
+        }
+
+        synchronized (this._serviceCache) {
+
+            this._serviceCache.add(new BaseService(data, answer));
+
+            if (this._serviceCache.size() >= 100) {
+
+                this._serviceCache.clear();
+            }
+
+            if (!this._serviceAble) {
+
+                this.startServiceThread();
+            }
+
+            this._serviceCache.notify();
+        }
     }
 
     public void onSecond(long timestamp) {
@@ -88,11 +149,54 @@ public class FPProcessor {
 
     public void destroy() {
 
-        FPEvent event = this.getEvent();
-
-//        if (event != null) {
-//
-//            event.removeListener();
-//        }
+        this.stopServiceThread();
     }
+}
+
+class BaseService {
+
+    private FPData _data;
+    private FPProcessor.IAnswer _answer;
+
+    public BaseService(FPData data, FPProcessor.IAnswer answer) {
+
+        this._data = data;
+        this._answer = answer;
+    }
+
+    public void service(FPProcessor.IProcessor processor) {
+
+        if (processor != null) {
+
+            processor.service(this._data, this._answer);
+        }
+    }
+}
+
+class BaseProcessor implements FPProcessor.IProcessor {
+
+    FPEvent event = new FPEvent();
+
+    @Override
+    public void service(FPData data, FPProcessor.IAnswer answer) {
+
+        // TODO
+        if (data.getFlag() == 0) {}
+        if (data.getFlag() == 1) {}
+    }
+
+    @Override
+    public boolean hasPushService(String name) {
+
+        return false;
+    }
+
+    @Override
+    public FPEvent getEvent() {
+
+        return this.event;
+    }
+
+    @Override
+    public void onSecond(long timestamp) {}
 }

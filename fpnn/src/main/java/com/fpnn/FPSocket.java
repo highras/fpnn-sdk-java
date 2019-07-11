@@ -6,8 +6,8 @@ import com.fpnn.nio.NIOCore;
 import com.fpnn.nio.ThreadPool;
 
 import java.io.IOException;
+import java.net.Inet6Address;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -24,17 +24,17 @@ public class FPSocket {
     private int _port;
     private String _host;
     private int _timeout;
-    private SocketAddress _addr;
     private SocketChannel _socket = null;
 
     private IRecvData _recvData;
 
     private long _expire = 0;
+    private boolean _isIPv6 = false;
     private boolean _isClosed = true;
     private FPEvent _event;
 
     private ByteBuffer _sendBuffer = null;
-    private List _sendQueue = new ArrayList();
+    private List<ByteBuffer> _sendQueue = new ArrayList<ByteBuffer>();
 
     public FPSocket(IRecvData recvData, String host, int port, int timeout) {
 
@@ -59,26 +59,32 @@ public class FPSocket {
         }
 
         this._isClosed = false;
+        InetSocketAddress addr;
 
         try {
 
             this._socket = this.initConnect();
-        } catch (IOException ex) {
 
-            this.onError(ex);
+            addr = new InetSocketAddress(this._host, this._port);
+            this._isIPv6 = addr.getAddress() instanceof Inet6Address;
+        } catch (Exception ex) {
+
+            this.close(ex);
+            return;
         }
 
         final FPSocket self = this;
+        final InetSocketAddress faddr = addr;
         final SocketChannel socket = this._socket;
 
         ThreadPool.getInstance().execute(new Runnable() {
 
             @Override
             public void run() {
+
                 try {
 
-                    SocketAddress addr = self.getAddr();
-                    if (socket.connect(addr)) {
+                    if (socket.connect(faddr)) {
 
                         self.close(new Exception("wrong connector!"));
                         return;
@@ -95,11 +101,12 @@ public class FPSocket {
 
     public void destroy() {
 
+        this._isIPv6 = false;
+
         this._event.removeListener();
         this._recvData = null;
 
         this.close(null);
-        this.onClose(null);
     }
 
     public void write(ByteBuffer buf) {
@@ -135,19 +142,14 @@ public class FPSocket {
         return this._port;
     }
 
-    public SocketAddress getAddr() {
-
-        if (this._addr == null) {
-
-            this._addr = new InetSocketAddress(this._host, this._port);
-        }
-
-        return this._addr;
-    }
-
     public int getTimeout() {
 
         return this._timeout;
+    }
+
+    public boolean isIPv6() {
+
+        return this._isIPv6;
     }
 
     public boolean isOpen() {
@@ -181,7 +183,7 @@ public class FPSocket {
 
             synchronized (this._sendQueue) {
 
-                this._sendBuffer = (ByteBuffer) this._sendQueue.remove(0);
+                this._sendBuffer = this._sendQueue.remove(0);
             }
 
             if (this._sendBuffer != null) {
@@ -199,16 +201,13 @@ public class FPSocket {
         try {
 
             int i = this._socket.write(this._sendBuffer);
+        } catch (IOException ex) {
+
+            this.onError(ex);
         } catch (Exception ex) {
 
-            if (ex instanceof IOException) {
-
-                throw (ex);
-            } else {
-
-                this.close(ex);
-                return;
-            }
+            this.close(ex);
+            return;
         }
 
         if (this._sendBuffer.hasRemaining()) {

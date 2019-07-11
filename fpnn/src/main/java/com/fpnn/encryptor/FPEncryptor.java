@@ -1,5 +1,6 @@
 package com.fpnn.encryptor;
 
+import com.fpnn.ErrorRecorder;
 import com.fpnn.FPConfig;
 import com.fpnn.FPData;
 import com.fpnn.FPPackage;
@@ -78,7 +79,7 @@ public class FPEncryptor {
         } catch (Exception ex) {
 
             this._keyGenerator = null;
-            ex.printStackTrace();
+            ErrorRecorder.getInstance().recordError(ex);
         }
 
         if (this._keyGenerator != null) {
@@ -89,7 +90,7 @@ public class FPEncryptor {
             } catch (GeneralSecurityException ex) {
 
                 this._encKit = null;
-                ex.printStackTrace();
+                ErrorRecorder.getInstance().recordError(ex);
             }
         }
 
@@ -158,7 +159,7 @@ public class FPEncryptor {
             bytes = this._encKit.decryptor.doFinal(bytes);
         } catch (GeneralSecurityException ex) {
 
-            ex.printStackTrace();
+            ErrorRecorder.getInstance().recordError(ex);
         }
 
         return ByteBuffer.wrap(bytes);
@@ -189,7 +190,7 @@ public class FPEncryptor {
             bytes = this._encKit.encryptor.doFinal(buf.array());
         } catch (GeneralSecurityException ex) {
 
-            ex.printStackTrace();
+            ErrorRecorder.getInstance().recordError(ex);
         }
 
         ByteBuffer rbuf = ByteBuffer.allocate(bytes.length + 4);

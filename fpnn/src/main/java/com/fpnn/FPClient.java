@@ -7,11 +7,8 @@ import com.fpnn.event.EventData;
 import com.fpnn.event.FPEvent;
 import com.fpnn.nio.NIOCore;
 
-import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-
 
 public class FPClient {
 
@@ -58,24 +55,18 @@ public class FPClient {
 
         this._autoReconnect = autoReconnect;
 
-
-        final WeakReference<FPClient> weakSelf = new WeakReference<FPClient>(this);
+        final FPClient self = this;
 
         this._secondListener = new FPEvent.IListener() {
 
             @Override
             public void fpEvent(EventData evd) {
 
-                if (weakSelf.get() != null) {
-
-                    weakSelf.get().onSecond(evd.getTimestamp());
-                }
+                self.onSecond(evd.getTimestamp());
             }
         };
 
         NIOCore.getInstance().getEvent().addListener("second", this._secondListener);
-
-        final FPClient self = this;
 
         this._sock = new FPSocket(new FPSocket.IRecvData() {
 
@@ -187,6 +178,12 @@ public class FPClient {
 
     public void destroy() {
 
+        if (this._secondListener != null) {
+
+            NIOCore.getInstance().getEvent().removeListener("second", this._secondListener);
+            this._secondListener = null;
+        }
+
         this._autoReconnect = false;
 
         this._event.removeListener();
@@ -195,12 +192,6 @@ public class FPClient {
         this._sock.destroy();
 
         this.onClose();
-
-        if (this._secondListener != null) {
-
-            NIOCore.getInstance().getEvent().removeListener("second", this._secondListener);
-            this._secondListener = null;
-        }
     }
 
     public void sendQuest(FPData data) {
@@ -246,9 +237,10 @@ public class FPClient {
 
             buf = this._pkg.enCode(data);
             buf = this._cyr.enCode(buf);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
 
             this.onError(ex);
+            return;
         }
 
         if (callback != null) {
@@ -275,15 +267,21 @@ public class FPClient {
 
             buf = this._pkg.enCode(data);
             buf = this._cyr.enCode(buf);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
 
             this.onError(ex);
+            return;
         }
 
         if (buf != null) {
 
             this._sock.write(buf);
         }
+    }
+
+    public boolean isIPv6() {
+
+        return this._sock.isIPv6();
     }
 
     public boolean isOpen() {
@@ -376,7 +374,6 @@ public class FPClient {
 
         if (numRead == -1) {
 
-            this._sock.close(null);
             return;
         }
 
@@ -432,9 +429,9 @@ public class FPClient {
 
                 numRead = socket.read(this._peekData.buffer);
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
 
-            this.onError(ex);
+            this.close(ex);
         }
 
         return numRead;
@@ -487,8 +484,6 @@ public class FPClient {
     }
 
     private void onSecond(long timestamp) {
-
-        this._event.fireEvent(new EventData(this, "second", timestamp));
 
         this._psr.onSecond(timestamp);
         this._callback.onSecond(timestamp);

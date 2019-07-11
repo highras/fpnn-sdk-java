@@ -1,5 +1,7 @@
 package com.fpnn.encryptor;
 
+import com.fpnn.ErrorRecorder;
+
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
@@ -140,7 +142,7 @@ class KeyGenerator {
             return cipher;
         } catch (GeneralSecurityException ex) {
 
-            ex.printStackTrace();
+            ErrorRecorder.getInstance().recordError(ex);
         }
 
         return null;
@@ -156,7 +158,7 @@ class KeyGenerator {
             return cipher;
         } catch (GeneralSecurityException ex) {
 
-            ex.printStackTrace();
+            ErrorRecorder.getInstance().recordError(ex);
         }
 
         return null;

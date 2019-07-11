@@ -87,7 +87,7 @@ public class FPData {
                 this.setSS(this._method.getBytes("utf-8").length);
             } catch (Exception ex) {
 
-                ex.printStackTrace();
+                ErrorRecorder.getInstance().recordError(ex);
             }
         }
     }
@@ -142,7 +142,7 @@ public class FPData {
                 this._psize = this._json_data.getBytes("utf-8").length;
             } catch (Exception ex) {
 
-                ex.printStackTrace();
+                ErrorRecorder.getInstance().recordError(ex);
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.fpnn.nio;
 
+import com.fpnn.ErrorRecorder;
 import com.fpnn.FPSocket;
 import com.fpnn.event.EventData;
 import com.fpnn.event.FPEvent;
@@ -27,7 +28,7 @@ public class NIOCore implements Runnable {
             ThreadPool.getInstance().execute(this);
         } catch (IOException ex) {
 
-            ex.printStackTrace();
+            ErrorRecorder.getInstance().recordError(ex);
         }
     }
 
@@ -80,7 +81,7 @@ public class NIOCore implements Runnable {
             socket.close();
         } catch (IOException ex) {
 
-            ex.printStackTrace();
+            ErrorRecorder.getInstance().recordError(ex);
         }
 
         if (key != null) {
@@ -208,7 +209,7 @@ public class NIOCore implements Runnable {
             } catch (Exception ex) {
 
                 this._pendingChanges.clear();
-                ex.printStackTrace();
+                ErrorRecorder.getInstance().recordError(ex);
             }
         }
     }

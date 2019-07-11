@@ -39,7 +39,7 @@ public class MainTest extends AppCompatActivity {
             inputStream.close();
         } catch (IOException ex) {
 
-            ex.printStackTrace();
+            System.err.println(ex);
         }
 
         return bytes;
