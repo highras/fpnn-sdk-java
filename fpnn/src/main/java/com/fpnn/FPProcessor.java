@@ -64,9 +64,9 @@ public class FPProcessor {
 
                         List<BaseService> list;
 
-                        synchronized (self._serviceCache) {
+                        synchronized (self.service_lock) {
 
-                            self._serviceCache.wait();
+                            self.service_lock.wait();
 
                             list = self._serviceCache;
                             self._serviceCache = new ArrayList<BaseService>();
@@ -96,15 +96,16 @@ public class FPProcessor {
 
     private void stopServiceThread() {
 
-        synchronized (this._serviceCache) {
+        synchronized (this.service_lock) {
 
-            this._serviceCache.notify();
+            this.service_lock.notify();
         }
 
         this._serviceAble = false;
     }
 
     private List<BaseService> _serviceCache = new ArrayList<BaseService>();
+    private Object service_lock = new Object();
 
     public void service(FPData data, IAnswer answer) {
 
@@ -121,7 +122,7 @@ public class FPProcessor {
             }
         }
 
-        synchronized (this._serviceCache) {
+        synchronized (this.service_lock) {
 
             this._serviceCache.add(new BaseService(data, answer));
 
@@ -135,7 +136,7 @@ public class FPProcessor {
                 this.startServiceThread();
             }
 
-            this._serviceCache.notify();
+            this.service_lock.notify();
         }
     }
 

@@ -49,13 +49,13 @@ public class ErrorRecorder {
                     @Override
                     public void recordError(Exception ex) {
 
-                        System.err.println(ex);
+                        ex.printStackTrace();
                     }
                 });
 
             } catch (Exception e) {
 
-                System.err.println(e);
+                e.printStackTrace();
             }
         }
 

@@ -34,6 +34,8 @@ public class FPSocket {
     private FPEvent _event;
 
     private ByteBuffer _sendBuffer = null;
+
+    private Object send_lock = new Object();
     private List<ByteBuffer> _sendQueue = new ArrayList<ByteBuffer>();
 
     public FPSocket(IRecvData recvData, String host, int port, int timeout) {
@@ -111,7 +113,7 @@ public class FPSocket {
 
     public void write(ByteBuffer buf) {
 
-        synchronized (this._sendQueue) {
+        synchronized (this.send_lock) {
 
             this._sendQueue.add(buf);
         }
@@ -128,6 +130,18 @@ public class FPSocket {
 
             this._isClosed = true;
             NIOCore.getInstance().closeSocket(this._socket);
+
+            if (this._sendBuffer != null) {
+
+                this._sendBuffer.clear();
+                this._sendBuffer = null;
+            }
+
+            synchronized (this.send_lock) {
+
+                this._sendQueue.clear();
+            }
+
             this.onClose(ex);
         }
     }
@@ -181,15 +195,15 @@ public class FPSocket {
 
         if (this._sendBuffer == null && !this._sendQueue.isEmpty()) {
 
-            synchronized (this._sendQueue) {
+            synchronized (this.send_lock) {
 
                 this._sendBuffer = this._sendQueue.remove(0);
             }
+        }
 
-            if (this._sendBuffer != null) {
+        if (this._sendBuffer != null) {
 
-                this._sendBuffer.flip();
-            }
+            this._sendBuffer.flip();
         }
 
         if (this._sendBuffer == null) {
