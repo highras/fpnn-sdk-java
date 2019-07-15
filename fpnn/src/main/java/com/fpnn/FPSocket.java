@@ -61,23 +61,8 @@ public class FPSocket {
         }
 
         this._isClosed = false;
-        InetSocketAddress addr;
-
-        try {
-
-            this._socket = this.initConnect();
-
-            addr = new InetSocketAddress(this._host, this._port);
-            this._isIPv6 = addr.getAddress() instanceof Inet6Address;
-        } catch (Exception ex) {
-
-            this.close(ex);
-            return;
-        }
 
         final FPSocket self = this;
-        final InetSocketAddress faddr = addr;
-        final SocketChannel socket = this._socket;
 
         ThreadPool.getInstance().execute(new Runnable() {
 
@@ -86,13 +71,18 @@ public class FPSocket {
 
                 try {
 
-                    if (socket.connect(faddr)) {
+                    self._socket = self.initConnect();
+                    InetSocketAddress addr = new InetSocketAddress(self._host, self._port);
+
+                    self._isIPv6 = addr.getAddress() instanceof Inet6Address;
+
+                    if (self._socket.connect(addr)) {
 
                         self.close(new Exception("wrong connector!"));
                         return;
                     }
 
-                    NIOCore.getInstance().register(self, socket, SelectionKey.OP_CONNECT);
+                    NIOCore.getInstance().register(self, self._socket, SelectionKey.OP_CONNECT);
                 } catch (Exception ex) {
 
                     self.close(ex);
