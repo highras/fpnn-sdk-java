@@ -58,9 +58,9 @@ public class FPProcessor {
             @Override
             public void run() {
 
-                try {
+                while(self._serviceAble) {
 
-                    while(self._serviceAble) {
+                    try{
 
                         List<BaseService> list;
 
@@ -73,11 +73,10 @@ public class FPProcessor {
                         }
 
                         self.callService(list);
+                    } catch (Exception ex) {
+
+                        ErrorRecorder.getInstance().recordError(ex);
                     }
-
-                } catch (Exception ex) {
-
-                    ErrorRecorder.getInstance().recordError(ex);
                 }
             }
         });
