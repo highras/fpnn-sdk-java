@@ -81,7 +81,10 @@ public class FPCallback {
 
                 try {
 
-                    fcb.callback(new CallbackData(fData));
+                    if (fcb != null) {
+
+                        fcb.callback(new CallbackData(fData));
+                    }
                 } catch (Exception ex) {
 
                     ErrorRecorder.getInstance().recordError(ex);
@@ -126,7 +129,10 @@ public class FPCallback {
 
                 try {
 
-                    fcb.callback(new CallbackData(fex));
+                    if (fcb != null) {
+
+                        fcb.callback(new CallbackData(fex));
+                    }
                 } catch (Exception ex) {
 
                     ErrorRecorder.getInstance().recordError(ex);

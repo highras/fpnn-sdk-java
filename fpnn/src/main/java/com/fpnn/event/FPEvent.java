@@ -12,33 +12,31 @@ public class FPEvent {
         void fpEvent(EventData evd);
     }
 
-
     private Map _listeners = new HashMap();
 
     public void addListener(String type, IListener lisr) {
 
-        List queue = (List) this._listeners.get(type);
+        synchronized (this._listeners) {
 
-        if (queue == null) {
+            List queue = (List) this._listeners.get(type);
 
-            queue = new ArrayList();
+            if (queue == null) {
 
-            synchronized (this._listeners) {
-
+                queue = new ArrayList();
                 this._listeners.put(type, queue);
             }
-        }
 
-        queue.add(lisr);
+            queue.add(lisr);
+        }
     }
 
     public void fireEvent(EventData evd) {
 
-        List queue = (List) this._listeners.get(evd.getType());
+        synchronized (this._listeners) {
 
-        if (queue != null) {
+            List queue = (List) this._listeners.get(evd.getType());
 
-            synchronized (queue) {
+            if (queue != null) {
 
                 final EventData fevd = evd;
                 Iterator<IListener> iterator = queue.iterator();
@@ -47,23 +45,28 @@ public class FPEvent {
 
                     final IListener fLisr = iterator.next();
 
-                    if (fLisr != null) {
+                    if (fLisr == null) {
 
-                        ThreadPool.getInstance().execute(new Runnable() {
+                        continue;
+                    }
 
-                            @Override
-                            public void run() {
+                    ThreadPool.getInstance().execute(new Runnable() {
 
-                                try {
+                        @Override
+                        public void run() {
+
+                            try {
+
+                                if (fLisr != null) {
 
                                     fLisr.fpEvent(fevd);
-                                } catch(Exception ex) {
-
-                                    ErrorRecorder.getInstance().recordError(ex);
                                 }
+                            } catch(Exception ex) {
+
+                                ErrorRecorder.getInstance().recordError(ex);
                             }
-                        });
-                    }
+                        }
+                    });
                 }
             }
         }
@@ -87,18 +90,21 @@ public class FPEvent {
 
     public void removeListener(String type, IListener lisr) {
 
-        List queue = (List) this._listeners.get(type);
+        synchronized (this._listeners) {
 
-        if (queue == null) {
+            List queue = (List) this._listeners.get(type);
 
-            return;
-        }
+            if (queue == null) {
 
-        int index = queue.indexOf(lisr);
+                return;
+            }
 
-        if (index != -1) {
+            int index = queue.indexOf(lisr);
 
-            queue.remove(index);
+            if (index != -1) {
+
+                queue.remove(index);
+            }
         }
     }
 }
