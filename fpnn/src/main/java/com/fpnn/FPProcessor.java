@@ -44,12 +44,15 @@ public class FPProcessor {
 
     private void startServiceThread() {
 
-        if (this._serviceAble) {
+        synchronized (this.service_lock) {
 
-            return;
+            if (this._serviceAble) {
+
+                return;
+            }
+
+            this._serviceAble = true;
         }
-
-        this._serviceAble = true;
 
         final FPProcessor self = this;
 
@@ -76,6 +79,9 @@ public class FPProcessor {
                     } catch (Exception ex) {
 
                         ErrorRecorder.getInstance().recordError(ex);
+                    } finally {
+
+                        self.stopServiceThread();
                     }
                 }
             }
@@ -121,6 +127,11 @@ public class FPProcessor {
             }
         }
 
+        if (!this._serviceAble) {
+
+            this.startServiceThread();
+        }
+
         synchronized (this.service_lock) {
 
             this._serviceCache.add(new BaseService(data, answer));
@@ -128,11 +139,6 @@ public class FPProcessor {
             if (this._serviceCache.size() >= 100) {
 
                 this._serviceCache.clear();
-            }
-
-            if (!this._serviceAble) {
-
-                this.startServiceThread();
             }
 
             this.service_lock.notify();

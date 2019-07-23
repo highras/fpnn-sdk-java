@@ -118,7 +118,6 @@ public class FPSocket {
 
         if (!this._isClosed) {
 
-            this._isClosed = true;
             NIOCore.getInstance().closeSocket(this._socket);
 
             if (this._sendBuffer != null) {
@@ -273,15 +272,20 @@ public class FPSocket {
 
     private void onClose(Exception ex) {
 
-        this._expire = 0;
-        this._socket = null;
+        if (!this._isClosed) {
 
-        if (ex != null) {
+            this._isClosed = true;
 
-            this.onError(ex);
+            this._expire = 0;
+            this._socket = null;
+
+            if (ex != null) {
+
+                this.onError(ex);
+            }
+
+            this._event.fireEvent(new EventData(this, "close"));
         }
-
-        this._event.fireEvent(new EventData(this, "close"));
     }
 
     private void onData(SocketChannel socket) {
