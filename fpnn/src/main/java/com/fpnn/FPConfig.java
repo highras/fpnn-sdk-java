@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 public class FPConfig {
 
-    public static final String VERSION = "1.0.2";
+    public static final String VERSION = "1.1.9";
 
     public static final byte[] FPNN_VERSION = definedVersion();
     public static final byte[] FP_FLAG = definedFlag();
@@ -14,46 +14,36 @@ public class FPConfig {
 
     public static final short READ_BUFFER_LEN = 12;
     public static final int SEND_TIMEOUT = 20 * 1000;
-    public static final short MAX_THREAD_COUNT = 0;    // default means 'Runtime.getRuntime().availableProcessors() * 2'
 
     private static byte[] definedVersion() {
-
         byte[] bytes = new byte[2];
         bytes[0] = (byte) 0x0;
         bytes[1] = (byte) 0x1;
-
         return bytes;
     }
 
     private static byte[] definedFlag() {
-
         byte b = 0;
         b |= 0x80;
-
         byte[] bytes = new byte[2];
         bytes[0] = (byte) 0x40;         // 64: FP_FLAG_JSON
         bytes[1] = b;                   // 128: FP_FLAG_MSGPACK
-
         return bytes;
     }
 
     private static byte[] definedMsgType() {
-
         byte[] bytes = new byte[3];
         bytes[0] = (byte) 0x0;          // 0: FP_MT_ONEWAY
         bytes[1] = (byte) 0x1;          // 1: FP_MT_TWOWAY
         bytes[2] = (byte) 0x2;          // 2: FP_MT_ANSWER
-
         return bytes;
     }
 
     private static byte[] definedTcpMagic() {
-
         return ByteBuffer.wrap("FPNN".getBytes()).array();
     }
 
     private static byte[] definedHttpMagic() {
-
         return ByteBuffer.wrap("POST".getBytes()).array();
     }
 

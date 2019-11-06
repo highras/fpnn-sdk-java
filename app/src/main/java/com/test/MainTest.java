@@ -10,15 +10,11 @@ public class MainTest extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main_test);
 
         System.out.println(new String("Test with activity!"));
-
-        byte[] bytes = this.loadKey("key/test-secp256k1-public.der");
-
+        byte[] bytes = this.loadKey("key/test-secp256k1-public.der-false");
         new TestCase(bytes);
     }
 

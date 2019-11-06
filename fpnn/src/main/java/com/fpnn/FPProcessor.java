@@ -1,208 +1,243 @@
 package com.fpnn;
 
-import com.fpnn.event.FPEvent;
-import com.fpnn.nio.ThreadPool;
-
 import java.util.List;
 import java.util.ArrayList;
 
 public class FPProcessor {
 
     public interface IAnswer {
-
         void sendAnswer(Object payload, boolean exception);
     }
 
     public interface IProcessor {
-
         void service(FPData data, IAnswer answer);
         void onSecond(long timestamp);
         boolean hasPushService(String name);
-        FPEvent getEvent();
     }
 
-    private IProcessor _processor;
+    class ServiceLocker {
+        public int status = 0;
+    }
 
-    public FPProcessor() {}
-
-    public FPEvent getEvent() {
-
-        if (this._processor != null) {
-
-            return this._processor.getEvent();
+    class BaseProcessor implements FPProcessor.IProcessor {
+        @Override
+        public void service(FPData data, FPProcessor.IAnswer answer) {
+            // TODO
+            if (data.getFlag() == 0) {}
+            if (data.getFlag() == 1) {}
         }
-
-        return null;
+        @Override
+        public boolean hasPushService(String name) {
+            return false;
+        }
+        @Override
+        public void onSecond(long timestamp) {}
     }
+
+    private boolean _destroyed;
+    private IProcessor _processor;
+    private Object self_locker = new Object();
 
     public void setProcessor(IProcessor processor) {
-
-        this._processor = processor;
+        synchronized (self_locker) {
+            this._processor = processor;
+        }
     }
 
-    private boolean _serviceAble;
+    private Thread _serviceThread = null;
+    private ServiceLocker service_locker = new ServiceLocker();
 
     private void startServiceThread() {
+        synchronized (self_locker) {
+            if (this._destroyed) {
+                return;
+            }
+        }
 
-        synchronized (this.service_lock) {
+        synchronized (service_locker) {
+            if (service_locker.status != 0) {
+                return;
+            }
+            service_locker.status = 1;
 
-            if (this._serviceAble) {
+            try {
+                final FPProcessor self = this;
+                this._serviceThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        self.serviceThread();
+                    }
+                });
 
+                try {
+                    this._serviceThread.setName("FPNN-PUSH");
+                } catch (Exception e) {}
+
+                this._serviceThread.start();
+            } catch (Exception ex) {
+                ErrorRecorder.getInstance().recordError(ex);
+            }
+        }
+    }
+
+    private void serviceThread() {
+        try {
+            while (true) {
+                List<FPManager.IService> list;
+                synchronized (service_locker) {
+                    service_locker.wait();
+
+                    if (service_locker.status == 0) {
+                        return;
+                    }
+
+                    list = this._serviceCache;
+                    this._serviceCache = new ArrayList<FPManager.IService>();
+                }
+                this.callService(list);
+            }
+        } catch (Exception ex) {
+            ErrorRecorder.getInstance().recordError(ex);
+        } finally {
+            this.stopServiceThread();
+        }
+    }
+
+    private void callService(List<FPManager.IService> list) {
+        if (list == null) {
+            return;
+        }
+
+        for (int i = 0; i < list.size(); i++) {
+            FPManager.IService is = list.get(i);
+            if (is != null) {
+                try {
+                    is.service();
+                } catch (Exception ex) {
+                    ErrorRecorder.getInstance().recordError(ex);
+                }
+            }
+        }
+    }
+
+    private void stopServiceThread() {
+        synchronized (service_locker) {
+            if (service_locker.status == 1) {
+                service_locker.status = 2;
+
+                try {
+                    service_locker.notify();
+                } catch (Exception ex) {
+                    ErrorRecorder.getInstance().recordError(ex);
+                }
+
+                final FPProcessor self = this;
+                FPManager.getInstance().delayTask(100, new FPManager.ITask() {
+                    @Override
+                    public void task(Object state) {
+                        synchronized (service_locker) {
+                            service_locker.status = 0;
+                            self._serviceCache.clear();
+                        }
+                    }
+                }, null);
+            }
+        }
+    }
+
+    private List<FPManager.IService> _serviceCache = new ArrayList<FPManager.IService>();
+
+    public void service(final FPData data, IAnswer answer) {
+        String method = null;
+
+        if (data != null) {
+            method = data.getMethod();
+        }
+
+        if (method == null || method.isEmpty()) {
+            return;
+        }
+
+        IProcessor psr = null;
+        synchronized (self_locker){
+            if (this._destroyed) {
                 return;
             }
 
-            this._serviceAble = true;
+            if (this._processor == null) {
+                this._processor = new BaseProcessor();
+            }
+
+            psr = this._processor;
+            if (!psr.hasPushService(method)) {
+                if (method != "ping") {
+                    return;
+                }
+            }
         }
 
-        final FPProcessor self = this;
-
-        ThreadPool.getInstance().execute(new Runnable() {
-
+        final IProcessor fpsr = psr;
+        final IAnswer fanswer = answer;
+        this.addService(new FPManager.IService() {
             @Override
-            public void run() {
-
-                while(self._serviceAble) {
-
-                    try{
-
-                        List<BaseService> list;
-
-                        synchronized (self.service_lock) {
-
-                            self.service_lock.wait();
-
-                            list = self._serviceCache;
-                            self._serviceCache = new ArrayList<BaseService>();
-                        }
-
-                        self.callService(list);
-                    } catch (Exception ex) {
-
-                        ErrorRecorder.getInstance().recordError(ex);
-                    } finally {
-
-                        self.stopServiceThread();
+            public void service() {
+                synchronized (self_locker) {
+                    if (fpsr != null) {
+                        fpsr.service(data, fanswer);
                     }
                 }
             }
         });
     }
 
-    private void callService(List<BaseService> list) {
-
-        for(BaseService bs : list) {
-
-            if (bs != null) {
-
-                bs.service(this._processor);
-            }
-        }
-    }
-
-    private void stopServiceThread() {
-
-        synchronized (this.service_lock) {
-
-            this.service_lock.notify();
-        }
-
-        this._serviceAble = false;
-    }
-
-    private List<BaseService> _serviceCache = new ArrayList<BaseService>();
-    private Object service_lock = new Object();
-
-    public void service(FPData data, IAnswer answer) {
-
-        if (this._processor == null) {
-
-            this._processor = new BaseProcessor();
-        }
-
-        if (!this._processor.hasPushService(data.getMethod())) {
-
-            if (data.getMethod() != "ping") {
-
+    private void addService(FPManager.IService service) {
+        synchronized (self_locker) {
+            if (this._destroyed) {
                 return;
             }
         }
 
-        if (!this._serviceAble) {
-
-            this.startServiceThread();
+        if (service == null) {
+            return;
         }
+        this.startServiceThread();
 
-        synchronized (this.service_lock) {
-
-            this._serviceCache.add(new BaseService(data, answer));
-
-            if (this._serviceCache.size() >= 100) {
-
-                this._serviceCache.clear();
+        synchronized (service_locker) {
+            if (this._serviceCache.size() < 10000) {
+                this._serviceCache.add(service);
             }
 
-            this.service_lock.notify();
+            if (this._serviceCache.size() == 9998) {
+                ErrorRecorder.getInstance().recordError(new Exception("Push Calls Limit!"));
+            }
+
+            try {
+                service_locker.notify();
+            } catch (Exception ex) {
+                ErrorRecorder.getInstance().recordError(ex);
+            }
         }
     }
 
     public void onSecond(long timestamp) {
-
-        if (this._processor != null) {
-
-            this._processor.onSecond(timestamp);
+        try {
+            synchronized (self_locker) {
+                if (this._processor != null) {
+                    this._processor.onSecond(timestamp);
+                }
+            }
+        } catch (Exception ex) {
+            ErrorRecorder.getInstance().recordError(ex);
         }
     }
 
     public void destroy() {
-
+        synchronized (self_locker) {
+            if (this._destroyed) {
+                return;
+            }
+            this._destroyed = true;
+        }
         this.stopServiceThread();
     }
-}
-
-class BaseService {
-
-    private FPData _data;
-    private FPProcessor.IAnswer _answer;
-
-    public BaseService(FPData data, FPProcessor.IAnswer answer) {
-
-        this._data = data;
-        this._answer = answer;
-    }
-
-    public void service(FPProcessor.IProcessor processor) {
-
-        if (processor != null) {
-
-            processor.service(this._data, this._answer);
-        }
-    }
-}
-
-class BaseProcessor implements FPProcessor.IProcessor {
-
-    FPEvent event = new FPEvent();
-
-    @Override
-    public void service(FPData data, FPProcessor.IAnswer answer) {
-
-        // TODO
-        if (data.getFlag() == 0) {}
-        if (data.getFlag() == 1) {}
-    }
-
-    @Override
-    public boolean hasPushService(String name) {
-
-        return false;
-    }
-
-    @Override
-    public FPEvent getEvent() {
-
-        return this.event;
-    }
-
-    @Override
-    public void onSecond(long timestamp) {}
 }

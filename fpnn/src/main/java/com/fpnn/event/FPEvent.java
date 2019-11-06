@@ -1,109 +1,121 @@
 package com.fpnn.event;
 
+import java.util.ArrayList;
+import java.util.EventListener;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import com.fpnn.ErrorRecorder;
-import com.fpnn.nio.ThreadPool;
-
-import java.util.*;
+import com.fpnn.FPManager;
 
 public class FPEvent {
 
     public interface IListener extends EventListener {
-
         void fpEvent(EventData evd);
     }
 
     private Map _listeners = new HashMap();
+    private Object self_locker = new Object();
 
     public void addListener(String type, IListener lisr) {
+        if (type == null || type.isEmpty()) {
+            ErrorRecorder.getInstance().recordError(new Exception("event type is null or empty"));
+            return;
+        }
 
-        synchronized (this._listeners) {
+        if (lisr == null) {
+            ErrorRecorder.getInstance().recordError(new Exception("IListener is null"));
+            return;
+        }
 
-            List queue = (List) this._listeners.get(type);
+        List queue = null;
 
-            if (queue == null) {
-
-                queue = new ArrayList();
-                this._listeners.put(type, queue);
+        synchronized (self_locker) {
+            if (!this._listeners.containsKey(type)) {
+                this._listeners.put(type, new ArrayList());
             }
 
-            queue.add(lisr);
-        }
-    }
+            queue = (List) this._listeners.get(type);
 
-    public void fireEvent(EventData evd) {
-
-        synchronized (this._listeners) {
-
-            List queue = (List) this._listeners.get(evd.getType());
-
-            if (queue != null) {
-
-                final EventData fevd = evd;
-                Iterator<IListener> iterator = queue.iterator();
-
-                while (iterator.hasNext()) {
-
-                    final IListener fLisr = iterator.next();
-
-                    if (fLisr == null) {
-
-                        continue;
-                    }
-
-                    ThreadPool.getInstance().execute(new Runnable() {
-
-                        @Override
-                        public void run() {
-
-                            try {
-
-                                if (fLisr != null) {
-
-                                    fLisr.fpEvent(fevd);
-                                }
-                            } catch(Exception ex) {
-
-                                ErrorRecorder.getInstance().recordError(ex);
-                            }
-                        }
-                    });
-                }
+            if (queue.indexOf(lisr) == -1) {
+                queue.add(lisr);
             }
         }
     }
 
     public void removeListener() {
-
-        synchronized (this._listeners) {
-
+        synchronized (self_locker) {
             this._listeners.clear();
         }
     }
 
     public void removeListener(String type) {
+        if (type == null || type.isEmpty()) {
+            ErrorRecorder.getInstance().recordError(new Exception("event type is null or empty"));
+            return;
+        }
 
-        synchronized (this._listeners) {
-
+        synchronized (self_locker) {
             this._listeners.remove(type);
         }
     }
 
     public void removeListener(String type, IListener lisr) {
+        if (type == null || type.isEmpty()) {
+            ErrorRecorder.getInstance().recordError(new Exception("event type is null or empty"));
+            return;
+        }
 
-        synchronized (this._listeners) {
+        if (lisr == null) {
+            ErrorRecorder.getInstance().recordError(new Exception("IListener is null"));
+            return;
+        }
 
-            List queue = (List) this._listeners.get(type);
+        List queue = null;
 
-            if (queue == null) {
-
+        synchronized (self_locker) {
+            if (!this._listeners.containsKey(type)) {
                 return;
             }
 
+            queue = (List) this._listeners.get(type);
             int index = queue.indexOf(lisr);
 
             if (index != -1) {
-
                 queue.remove(index);
+            }
+        }
+    }
+
+    public void fireEvent(EventData evd) {
+        if (evd == null) {
+            ErrorRecorder.getInstance().recordError(new Exception("IListener is null"));
+            return;
+        }
+
+        List queue = null;
+        String type = evd.getType();
+
+        if (type == null || type.isEmpty()) {
+            ErrorRecorder.getInstance().recordError(new Exception("event type is null or empty"));
+            return;
+        }
+
+        synchronized (self_locker) {
+            if (!this._listeners.containsKey(type)) {
+                return;
+            }
+
+            queue = (List) this._listeners.get(type);
+
+            Iterator<IListener> iterator = queue.iterator();
+            while (iterator.hasNext()) {
+                IListener lisr = iterator.next();
+
+                if (lisr != null) {
+                    FPManager.getInstance().eventTask(lisr, evd);
+                }
             }
         }
     }

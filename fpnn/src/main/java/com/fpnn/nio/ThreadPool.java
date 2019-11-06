@@ -87,21 +87,19 @@ public class ThreadPool {
 
     public synchronized void startTimerThread() {
 
-        if (this._useTimerThread) {
+        if (!this._useTimerThread) {
 
-            return;
+            this._useTimerThread = true;
+
+            ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+            executor.scheduleWithFixedDelay(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    NIOCore.getInstance().checkSecond();
+                }
+            }, 0, 1000, TimeUnit.MILLISECONDS);
         }
-
-        this._useTimerThread = true;
-        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-
-        executor.scheduleWithFixedDelay(new Runnable() {
-
-            @Override
-            public void run() {
-
-                NIOCore.getInstance().checkSecond();
-            }
-        }, 0, 1000, TimeUnit.MILLISECONDS);
     }
 }
