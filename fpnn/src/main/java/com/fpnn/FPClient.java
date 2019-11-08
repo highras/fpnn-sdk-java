@@ -344,6 +344,7 @@ public class FPClient {
     }
 
     private void onClose(EventData evd) {
+        this.close();
         synchronized (self_locker) {
             this._peekData = null;
             this._buffer.clear();
