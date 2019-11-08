@@ -24,6 +24,7 @@ public class FPProcessor {
         public void service(FPData data, FPProcessor.IAnswer answer) {
             // TODO
             if (data.getFlag() == 0) {}
+
             if (data.getFlag() == 1) {}
         }
         @Override
@@ -58,6 +59,7 @@ public class FPProcessor {
             if (service_locker.status != 0) {
                 return;
             }
+
             service_locker.status = 1;
 
             try {
@@ -84,6 +86,7 @@ public class FPProcessor {
         try {
             while (true) {
                 List<FPManager.IService> list;
+
                 synchronized (service_locker) {
                     service_locker.wait();
 
@@ -94,6 +97,7 @@ public class FPProcessor {
                     list = this._serviceCache;
                     this._serviceCache = new ArrayList<FPManager.IService>();
                 }
+
                 this.callService(list);
             }
         } catch (Exception ex) {
@@ -110,6 +114,7 @@ public class FPProcessor {
 
         for (int i = 0; i < list.size(); i++) {
             FPManager.IService is = list.get(i);
+
             if (is != null) {
                 try {
                     is.service();
@@ -159,7 +164,8 @@ public class FPProcessor {
         }
 
         IProcessor psr = null;
-        synchronized (self_locker){
+
+        synchronized (self_locker) {
             if (this._destroyed) {
                 return;
             }
@@ -169,6 +175,7 @@ public class FPProcessor {
             }
 
             psr = this._processor;
+
             if (!psr.hasPushService(method)) {
                 if (method != "ping") {
                     return;
@@ -200,6 +207,7 @@ public class FPProcessor {
         if (service == null) {
             return;
         }
+
         this.startServiceThread();
 
         synchronized (service_locker) {
@@ -236,8 +244,10 @@ public class FPProcessor {
             if (this._destroyed) {
                 return;
             }
+
             this._destroyed = true;
         }
+
         this.stopServiceThread();
     }
 }

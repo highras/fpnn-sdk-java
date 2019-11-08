@@ -108,8 +108,8 @@ public class FPEvent {
             }
 
             queue = (List) this._listeners.get(type);
-
             Iterator<IListener> iterator = queue.iterator();
+
             while (iterator.hasNext()) {
                 IListener lisr = iterator.next();
 

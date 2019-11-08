@@ -70,6 +70,7 @@ public class FPSocket {
             if (this._socket != null) {
                 return;
             }
+
             socket_locker.status = 0;
         }
 
@@ -77,6 +78,7 @@ public class FPSocket {
             if (conn_locker.status != 0) {
                 return;
             }
+
             conn_locker.status = 1;
             conn_locker.timestamp = FPManager.getInstance().getMilliTimestamp();
         }
@@ -95,6 +97,7 @@ public class FPSocket {
             if (conn_locker.status != 1) {
                 return;
             }
+
             conn_locker.status = 2;
         }
 
@@ -136,6 +139,7 @@ public class FPSocket {
             synchronized (conn_locker) {
                 conn_locker.status = 0;
             }
+
             this.close(ex);
         }
     }
@@ -151,6 +155,7 @@ public class FPSocket {
             if (this._socket != null) {
                 return this._socket.isConnected();
             }
+
             return false;
         }
     }
@@ -167,6 +172,7 @@ public class FPSocket {
         }
 
         boolean isTimeout = false;
+
         synchronized (conn_locker) {
             if (conn_locker.status != 0) {
                 if (timestamp - conn_locker.timestamp >= this._timeout) {
@@ -183,6 +189,7 @@ public class FPSocket {
 
     public void close(Exception ex) {
         boolean firstClose = false;
+
         try {
             synchronized (socket_locker) {
                 if (socket_locker.status == 0) {
@@ -197,6 +204,7 @@ public class FPSocket {
                         return;
                     }
                 }
+
                 this.tryClose();
             }
 
@@ -248,6 +256,7 @@ public class FPSocket {
         } catch (Exception ex) {
             ErrorRecorder.getInstance().recordError(ex);
         }
+
         this.destroy();
     }
 
@@ -271,6 +280,7 @@ public class FPSocket {
             if (socket_locker.status != 0) {
                 return;
             }
+
             NIOCore.getInstance().register(this, this._socket, SelectionKey.OP_WRITE | SelectionKey.OP_READ);
         }
     }
@@ -317,6 +327,7 @@ public class FPSocket {
 
     public void onWrite(SelectionKey key) throws IOException {
         boolean isEmptyQueue = false;
+
         synchronized (self_locker) {
             if (this._sendBuffer == null && !this._sendQueue.isEmpty()) {
                 this._sendBuffer = this._sendQueue.remove(0);
@@ -330,6 +341,7 @@ public class FPSocket {
                 synchronized (socket_locker) {
                     NIOCore.getInstance().register(this, this._socket, SelectionKey.OP_READ);
                 }
+
                 return;
             }
 
@@ -348,12 +360,12 @@ public class FPSocket {
                 synchronized (socket_locker) {
                     NIOCore.getInstance().register(this, this._socket, SelectionKey.OP_WRITE | SelectionKey.OP_READ);
                 }
+
                 return;
             }
 
             this._sendBuffer.clear();
             this._sendBuffer = null;
-
             isEmptyQueue = this._sendQueue.isEmpty();
         }
 
@@ -381,6 +393,7 @@ public class FPSocket {
             synchronized (socket_locker) {
                 NIOCore.getInstance().register(this, this._socket, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
             }
+
             this.onConnect();
         }
     }

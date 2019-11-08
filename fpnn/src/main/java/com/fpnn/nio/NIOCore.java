@@ -43,6 +43,7 @@ public class NIOCore {
         } catch (Exception ex) {
             ErrorRecorder.getInstance().recordError(ex);
         }
+
         this.startServiceThread();
     }
 
@@ -79,6 +80,7 @@ public class NIOCore {
         }
 
         SelectionKey key = null;
+
         if (this._selector != null) {
             key = socket.keyFor(this._selector);
         }
@@ -96,8 +98,10 @@ public class NIOCore {
 
     public void closeSocket() {
         List<SocketChannel> list = new ArrayList<SocketChannel>();
+
         synchronized (self_locker) {
             Iterator itor = this._fpsockData.entrySet().iterator();
+
             while (itor.hasNext()) {
                 Map.Entry entry = (Map.Entry) itor.next();
                 SocketChannel socket = (SocketChannel) entry.getKey();
@@ -107,6 +111,7 @@ public class NIOCore {
 
         for (int i = 0; i < list.size(); i++) {
             SocketChannel sc = list.get(i);
+
             if (sc != null) {
                 this.closeSocket(sc);
             }
@@ -117,17 +122,21 @@ public class NIOCore {
         synchronized (self_locker) {
             this._pendingChanges.add(new ChangeRequest(socket, ChangeRequest.CHANGEOPS, op));
         }
+
         this.wakeupSelector();
     }
 
     public void register(FPSocket sock, SocketChannel socket, int op) {
         this.startServiceThread();
+
         synchronized (self_locker) {
             if (!this._fpsockData.containsKey(socket)) {
                 this._fpsockData.put(socket, sock);
             }
+
             this._pendingChanges.add(new ChangeRequest(socket, ChangeRequest.REGISTER, op));
         }
+
         this.wakeupSelector();
     }
 
@@ -180,6 +189,7 @@ public class NIOCore {
 
         synchronized (self_locker) {
             Iterator<FPSocket> iterator = this._fpsockData.values().iterator();
+
             while (iterator.hasNext()) {
                 FPSocket sock = iterator.next();
                 list.add(sock);
@@ -188,6 +198,7 @@ public class NIOCore {
 
         for (int i = 0; i < list.size(); i++) {
             FPSocket sc = list.get(i);
+
             if (sc != null) {
                 sc.onSecond(ts);
             }
@@ -202,6 +213,7 @@ public class NIOCore {
             if (service_locker.status != 0) {
                 return;
             }
+
             service_locker.status = 1;
 
             try {
@@ -235,26 +247,33 @@ public class NIOCore {
 
                 synchronized (self_locker) {
                     if (!this._pendingChanges.isEmpty()) {
-
                         Iterator changes = this._pendingChanges.iterator();
+
                         while (changes.hasNext()) {
                             ChangeRequest change = (ChangeRequest) changes.next();
+
                             if (change == null || change.socket == null) {
                                 continue;
                             }
+
                             SelectionKey key;
+
                             switch (change.type) {
                                 case ChangeRequest.CHANGEOPS:
                                     key = change.socket.keyFor(this._selector);
+
                                     if (key != null && key.isValid()) {
                                         key.interestOps(key.interestOps() | change.ops);
                                     }
+
                                     break;
+
                                 case ChangeRequest.REGISTER:
                                     change.socket.register(this._selector, change.ops);
                                     break;
                             }
                         }
+
                         this._pendingChanges.clear();
                     }
                 }
@@ -268,6 +287,7 @@ public class NIOCore {
 
                 if (keys != null && !keys.isEmpty()) {
                     Iterator selectedKeys = keys.iterator();
+
                     while (selectedKeys.hasNext()) {
                         SelectionKey key = (SelectionKey) selectedKeys.next();
                         selectedKeys.remove();
@@ -302,6 +322,7 @@ public class NIOCore {
         synchronized (self_locker) {
             this._pendingChanges.clear();
         }
+
         synchronized (service_locker) {
             if (service_locker.status == 1) {
                 service_locker.status = 0;

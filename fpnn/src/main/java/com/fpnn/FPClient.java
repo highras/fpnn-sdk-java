@@ -59,7 +59,8 @@ public class FPClient {
         }
 
         String[] ipport = endpoint.split(":", 2);
-        if (ipport.length >=2) {
+
+        if (ipport.length >= 2) {
             this.init(ipport[0], Integer.parseInt(ipport[1]), connectionTimeout);
             return;
         }
@@ -89,7 +90,6 @@ public class FPClient {
             }
         };
         FPManager.getInstance().addSecond(this._secondListener);
-
         this._sock = new FPSocket(new FPSocket.IRecvData() {
             @Override
             public void onData(SocketChannel socket) {
@@ -137,6 +137,7 @@ public class FPClient {
             ErrorRecorder.getInstance().recordError(new Exception("has connected or enable crypto!"));
             return false;
         }
+
         return this._cry.encryptor();
     }
 
@@ -145,10 +146,14 @@ public class FPClient {
             ErrorRecorder.getInstance().recordError(new Exception("has connected or enable crypto!"));
             return false;
         }
+
         return this._cry.encryptor();
     }
 
     public void connect() {
+        if (this.hasConnect()) {
+            return;
+        }
         synchronized (self_locker) {
             if (this._isClose) {
                 return;
@@ -159,6 +164,9 @@ public class FPClient {
     }
 
     public void connect(IKeyData keyData) {
+        if (this.hasConnect()) {
+            return;
+        }
         synchronized (self_locker) {
             this._keyData = keyData;
         }
@@ -187,6 +195,7 @@ public class FPClient {
 
     private void socketClose(Exception ex) {
         this._isClose = true;
+
         if (this._secondListener != null) {
             FPManager.getInstance().removeSecond(this._secondListener);
             this._secondListener = null;
@@ -210,12 +219,15 @@ public class FPClient {
         CallbackData cbd = null;
         SyncCallbak syncCallbak = new SyncCallbak();
         this.sendQuest(data, syncCallbak, timeout);
+
         synchronized (syncCallbak) {
             while (syncCallbak.getReturn() == null) {
                 syncCallbak.wait();
             }
+
             cbd = syncCallbak.getReturn();
         }
+
         return cbd;
     }
 
@@ -229,6 +241,7 @@ public class FPClient {
         }
 
         ByteBuffer buf = null;
+
         try {
             buf = this._pkg.enCode(data);
             buf = this._cry.enCode(buf);
@@ -252,6 +265,7 @@ public class FPClient {
         }
 
         ByteBuffer buf = null;
+
         try {
             buf = this._pkg.enCode(data);
             buf = this._cry.enCode(buf);
@@ -279,20 +293,19 @@ public class FPClient {
 
     private void sendkey() {
         final FPClient self = this;
+
         if (this._cry.isCrypto()) {
             FPData data = this._keyData.getKeyData(this._cry);
             data.setMagic(FPConfig.TCP_MAGIC);
             data.setFlag(0x1);
             data.setMtype(0x1);
             data.setMethod("*key");
-
             this.sendQuest(data, new FPCallback.ICallback() {
                 @Override
                 public void callback(CallbackData cbd) {
                     self.onSendKey(cbd.getData());
                 }
             }, 30 * 1000);
-
             this._cry.setCryptoed(true);
             return;
         }
@@ -360,6 +373,7 @@ public class FPClient {
         synchronized (self_locker) {
             if (this._buffer.hasRemaining()) {
                 int num = this.readHead(socket);
+
                 if (num == -1) {
                     return;
                 }
@@ -367,6 +381,7 @@ public class FPClient {
 
             if (!this._buffer.hasRemaining()) {
                 boolean res = this.buildHead();
+
                 if (!res) {
                     return;
                 }
@@ -374,6 +389,7 @@ public class FPClient {
 
             if (this._peekData.buffer.hasRemaining()) {
                 int num = this.readBody(socket);
+
                 if (num == -1) {
                     return;
                 }
@@ -397,6 +413,7 @@ public class FPClient {
             this._sock.close(new Exception("worng package head!"));
             return false;
         }
+
         return true;
     }
 
@@ -407,6 +424,7 @@ public class FPClient {
     private void buildData() {
         this._peekData.buffer = this._cry.deCode(this._peekData.buffer.array());
         this._peekData = this._cry.peekHead(this._peekData);
+
         if (!this._pkg.deCode(this._peekData)) {
             this._sock.close(new Exception("worng package body!"));
             return;
@@ -419,16 +437,19 @@ public class FPClient {
         if (this._pkg.isQuest(this._peekData)) {
             this.pushService(this._peekData);
         }
+
         this._peekData = null;
     }
 
     private int readSocket(SocketChannel socket, ByteBuffer buf) {
         int numRead = -1;
+
         try {
             numRead = socket.read(buf);
         } catch (Exception ex) {
             this.close(ex);
         }
+
         return numRead;
     }
 
@@ -466,6 +487,7 @@ public class FPClient {
                 if (fQuest.getFlag() == 1) {
                     data.setPayload((byte[]) payload);
                 }
+
                 self.sendQuest(data);
             }
         });
@@ -473,6 +495,7 @@ public class FPClient {
 
     private void execCallback(FPData answer) {
         String key = this._pkg.getKeyCallback(answer);
+
         if (key != null && !key.isEmpty()) {
             this._callback.execCallback(key, answer);
         }

@@ -35,6 +35,7 @@ public class ErrorRecorder {
                 }
             });
         }
+
         this._recorder.recordError(ex);
     }
 }

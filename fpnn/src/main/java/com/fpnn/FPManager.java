@@ -62,6 +62,7 @@ public class FPManager {
                 ErrorRecorder.getInstance().recordError(new Exception("Second Calls Limit!"));
                 return;
             }
+
             this._secondCalls.add(callback);
         }
 
@@ -91,6 +92,7 @@ public class FPManager {
             if (timer_locker.status != 0) {
                 return;
             }
+
             timer_locker.status = 1;
 
             if (this._timerFuture == null) {
@@ -115,9 +117,10 @@ public class FPManager {
     private void callSecond(List<FPEvent.IListener> list) {
         for (int i = 0; i < list.size(); i++) {
             FPEvent.IListener cb = list.get(i);
+
             if (cb != null) {
                 try {
-                    cb.fpEvent(new EventData(this,"second", this.getMilliTimestamp()));
+                    cb.fpEvent(new EventData(this, "second", this.getMilliTimestamp()));
                 } catch (Exception ex) {
                     ErrorRecorder.getInstance().recordError(ex);
                 }
@@ -132,9 +135,10 @@ public class FPManager {
             if (this._timerFuture != null) {
                 try {
                     this._timerFuture.cancel(true);
-                }catch (Exception ex) {
+                } catch (Exception ex) {
                     ErrorRecorder.getInstance().recordError(ex);
                 }
+
                 this._timerFuture = null;
             }
         }
@@ -148,6 +152,7 @@ public class FPManager {
             if (service_locker.status != 0) {
                 return;
             }
+
             service_locker.status = 1;
 
             try {
@@ -174,6 +179,7 @@ public class FPManager {
         try {
             while (true) {
                 List<IService> list;
+
                 synchronized (service_locker) {
                     service_locker.wait();
 
@@ -184,12 +190,13 @@ public class FPManager {
                     list = this._serviceCache;
                     this._serviceCache = new ArrayList<IService>();
                 }
+
                 this.callService(list);
             }
         } catch (Exception ex) {
             ErrorRecorder.getInstance().recordError(ex);
         } finally {
-           this.stopServiceThread();
+            this.stopServiceThread();
         }
     }
 
@@ -200,6 +207,7 @@ public class FPManager {
 
         for (int i = 0; i < list.size(); i++) {
             IService is = list.get(i);
+
             if (is != null) {
                 try {
                     is.service();
@@ -218,6 +226,7 @@ public class FPManager {
                 } catch (Exception ex) {
                     ErrorRecorder.getInstance().recordError(ex);
                 }
+
                 service_locker.status = 0;
                 this._serviceCache.clear();
             }
@@ -233,7 +242,6 @@ public class FPManager {
 
         final FPEvent.IListener fcb = callback;
         final EventData fevd = evd;
-
         this.addService(new IService() {
             @Override
             public void service() {
@@ -251,7 +259,6 @@ public class FPManager {
 
         final FPCallback.ICallback fcb = callback;
         final CallbackData fcbd = cbd;
-
         this.addService(new IService() {
             @Override
             public void service() {
@@ -269,7 +276,6 @@ public class FPManager {
 
         final ITask ftask = task;
         final Object fstate = state;
-
         this.addService(new IService() {
             @Override
             public void service() {
@@ -284,6 +290,7 @@ public class FPManager {
         if (is == null) {
             return;
         }
+
         this.startServiceThread();
 
         synchronized (service_locker) {
@@ -316,7 +323,6 @@ public class FPManager {
         final FPManager self = this;
         final ITask ftask = task;
         final Object fstate = state;
-
         this.addTimerTask(new TimerTask() {
             @Override
             public void run() {
@@ -364,6 +370,7 @@ public class FPManager {
                 } catch (Exception ex) {
                     ErrorRecorder.getInstance().recordError(ex);
                 }
+
                 this._taskTimer = null;
             }
         }
