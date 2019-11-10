@@ -181,8 +181,6 @@ public class FPManager {
                 List<IService> list;
 
                 synchronized (service_locker) {
-                    service_locker.wait();
-
                     if (service_locker.status == 0) {
                         return;
                     }
@@ -190,8 +188,10 @@ public class FPManager {
                     list = this._serviceCache;
                     this._serviceCache = new ArrayList<IService>();
                 }
-
                 this.callService(list);
+                synchronized (service_locker) {
+                    service_locker.wait();
+                }
             }
         } catch (Exception ex) {
             ErrorRecorder.getInstance().recordError(ex);
