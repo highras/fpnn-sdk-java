@@ -3,6 +3,7 @@ package com.fpnn;
 import java.io.IOException;
 import java.net.Inet6Address;
 import java.net.InetSocketAddress;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -334,7 +335,7 @@ public class FPSocket {
             }
 
             if (this._sendBuffer != null) {
-                this._sendBuffer.flip();
+                ((Buffer)this._sendBuffer).flip();
             }
 
             if (this._sendBuffer == null) {
