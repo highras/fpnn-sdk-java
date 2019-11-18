@@ -82,7 +82,7 @@ public class FPManager {
     private TimerLocker timer_locker = new TimerLocker();
     private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
-    public void startTimerThread() {
+    private void startTimerThread() {
         synchronized (timer_locker) {
             if (timer_locker.status != 0) {
                 return;
@@ -123,7 +123,7 @@ public class FPManager {
         }
     }
 
-    public void stopTimerThread() {
+    private void stopTimerThread() {
         synchronized (timer_locker) {
             timer_locker.status = 0;
 
@@ -357,7 +357,7 @@ public class FPManager {
         }
     }
 
-    public void stopTaskTimer() {
+    private void stopTaskTimer() {
         synchronized (task_locker) {
             task_locker.status = 0;
 
@@ -371,6 +371,12 @@ public class FPManager {
                 this._taskTimer = null;
             }
         }
+    }
+
+    public void destroy() {
+        this.stopTimerThread();
+        this.stopServiceThread();
+        this.stopTaskTimer();
     }
 
     public long getMilliTimestamp() {
