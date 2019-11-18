@@ -97,6 +97,9 @@ public class FPProcessor {
                 }
                 this.callService(list);
                 synchronized (service_locker) {
+                    if (service_locker.status == 0) {
+                        return;
+                    }
                     service_locker.wait();
                 }
             }
@@ -128,12 +131,12 @@ public class FPProcessor {
     private void stopServiceThread() {
         synchronized (service_locker) {
             if (service_locker.status == 1) {
+                service_locker.status = 0;
                 try {
                     service_locker.notify();
                 } catch (Exception ex) {
                     ErrorRecorder.getInstance().recordError(ex);
                 }
-                service_locker.status = 0;
             }
         }
     }
