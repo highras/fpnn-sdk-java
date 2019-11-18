@@ -58,11 +58,6 @@ public class FPManager {
         }
 
         synchronized (timer_locker) {
-            if (this._secondCalls.size() >= 500) {
-                ErrorRecorder.getInstance().recordError(new Exception("Second Calls Limit!"));
-                return;
-            }
-
             this._secondCalls.add(callback);
         }
 
