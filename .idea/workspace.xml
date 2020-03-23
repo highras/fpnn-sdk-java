@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="fpnn:jar" />
+    </artifacts-to-build>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d33c1d9f-8e50-4c06-b53e-4687163742b1" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="importAutomatically" value="true" />
+        <option name="vmOptionsForImporter" value="-Xmx768m" />
+      </MavenImportingSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="1TrSHLcMg7zkTbgPXCSJxjdbDEW" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="Downloaded.Files.Path.Enabled" value="true" />
+    <property name="Repository.Attach.Annotations" value="false" />
+    <property name="Repository.Attach.JavaDocs" value="false" />
+    <property name="Repository.Attach.Sources" value="false" />
+    <property name="last_directory_selection" value="$PROJECT_DIR$/examples/duplex/asyncAnswerInDuplex/src/com/example" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
+  </component>
+  <component name="RunManager" selected="Application.SingleClientConcurrentTest">
+    <configuration name="AsyncStressClient" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="AsyncStressClient" />
+      <module name="asyncStressClient" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="BasicDemo" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="BasicDemo" />
+      <module name="BasicDemo" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="EarlyAnswerInDuplex" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.example.EarlyAnswerInDuplex" />
+      <module name="earlyAnswerInDuplex" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.example.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="OneWayDuplex" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.example.OneWayDuplex" />
+      <module name="oneWayDuplex" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.example.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SingleClientConcurrentTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="SingleClientConcurrentTest" />
+      <module name="singleClientConcurrentTest" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.SingleClientConcurrentTest" />
+        <item itemvalue="Application.AsyncStressClient" />
+        <item itemvalue="Application.EarlyAnswerInDuplex" />
+        <item itemvalue="Application.BasicDemo" />
+        <item itemvalue="Application.OneWayDuplex" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d33c1d9f-8e50-4c06-b53e-4687163742b1" name="Default Changelist" comment="" />
+      <created>1574216632761</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1574216632761</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/../../.." />
+      <path value="$PROJECT_DIR$/.." />
+    </ignored-roots>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="356" y="181" key="#Project_Structure" timestamp="1584949621159">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state x="356" y="179" key="#Project_Structure/0.23.1440.825@0.23.1440.825" timestamp="1584813453628" />
+    <state x="192" y="-794" key="#Project_Structure/0.23.1440.826/-282.-1177.1920.1177@-282.-1177.1920.1177" timestamp="1578032258284" />
+    <state x="356" y="183" key="#Project_Structure/0.23.1440.829@0.23.1440.829" timestamp="1584600896693" />
+    <state x="356" y="181" key="#Project_Structure/0.23.1440.832/-282.-1177.1920.1177@0.23.1440.832" timestamp="1584949621159" />
+    <state x="356" y="181" key="#Project_Structure/0.23.1440.833/-282.-1177.1920.1177@0.23.1440.833" timestamp="1584940272336" />
+    <state x="443" y="131" key="#com.intellij.ide.util.frameworkSupport.AddFrameworkSupportDialog" timestamp="1584808422398">
+      <screen x="0" y="23" width="1440" height="825" />
+    </state>
+    <state x="443" y="131" key="#com.intellij.ide.util.frameworkSupport.AddFrameworkSupportDialog/0.23.1440.825@0.23.1440.825" timestamp="1584808422398" />
+    <state x="494" y="288" key="#com.intellij.util.ui.classpath.ChooseLibrariesDialog" timestamp="1584935087399">
+      <screen x="0" y="23" width="1440" height="833" />
+    </state>
+    <state x="494" y="288" key="#com.intellij.util.ui.classpath.ChooseLibrariesDialog/0.23.1440.833/-282.-1177.1920.1177@0.23.1440.833" timestamp="1584935087399" />
+    <state width="1398" height="215" key="GridCell.Tab.0.bottom" timestamp="1584951081428">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state width="1398" height="213" key="GridCell.Tab.0.bottom/0.23.1440.825@0.23.1440.825" timestamp="1584813634217" />
+    <state width="1398" height="215" key="GridCell.Tab.0.bottom/0.23.1440.832/-282.-1177.1920.1177@0.23.1440.832" timestamp="1584951081428" />
+    <state width="1398" height="213" key="GridCell.Tab.0.bottom/0.23.1440.833/-282.-1177.1920.1177@0.23.1440.833" timestamp="1584940572463" />
+    <state width="1398" height="215" key="GridCell.Tab.0.center" timestamp="1584951081427">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state width="1398" height="213" key="GridCell.Tab.0.center/0.23.1440.825@0.23.1440.825" timestamp="1584813634216" />
+    <state width="1398" height="215" key="GridCell.Tab.0.center/0.23.1440.832/-282.-1177.1920.1177@0.23.1440.832" timestamp="1584951081427" />
+    <state width="1398" height="213" key="GridCell.Tab.0.center/0.23.1440.833/-282.-1177.1920.1177@0.23.1440.833" timestamp="1584940572462" />
+    <state width="1398" height="215" key="GridCell.Tab.0.left" timestamp="1584951081426">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state width="1398" height="213" key="GridCell.Tab.0.left/0.23.1440.825@0.23.1440.825" timestamp="1584813634216" />
+    <state width="1398" height="215" key="GridCell.Tab.0.left/0.23.1440.832/-282.-1177.1920.1177@0.23.1440.832" timestamp="1584951081426" />
+    <state width="1398" height="213" key="GridCell.Tab.0.left/0.23.1440.833/-282.-1177.1920.1177@0.23.1440.833" timestamp="1584940572461" />
+    <state width="1398" height="215" key="GridCell.Tab.0.right" timestamp="1584951081427">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state width="1398" height="213" key="GridCell.Tab.0.right/0.23.1440.825@0.23.1440.825" timestamp="1584813634216" />
+    <state width="1398" height="215" key="GridCell.Tab.0.right/0.23.1440.832/-282.-1177.1920.1177@0.23.1440.832" timestamp="1584951081427" />
+    <state width="1398" height="213" key="GridCell.Tab.0.right/0.23.1440.833/-282.-1177.1920.1177@0.23.1440.833" timestamp="1584940572462" />
+    <state x="221" y="74" key="SettingsEditor" timestamp="1584950509055">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state x="221" y="74" key="SettingsEditor/0.23.1440.825@0.23.1440.825" timestamp="1584815711758" />
+    <state x="221" y="74" key="SettingsEditor/0.23.1440.832/-282.-1177.1920.1177@0.23.1440.832" timestamp="1584950509055" />
+    <state x="503" y="220" key="chooseDestDirectoryDialog" timestamp="1584940486768">
+      <screen x="0" y="23" width="1440" height="833" />
+    </state>
+    <state x="503" y="220" key="chooseDestDirectoryDialog/0.23.1440.833/-282.-1177.1920.1177@0.23.1440.833" timestamp="1584940486768" />
+    <state x="533" y="343" key="com.intellij.ide.util.TipDialog" timestamp="1584949223844">
+      <screen x="0" y="23" width="1440" height="832" />
+    </state>
+    <state x="533" y="341" key="com.intellij.ide.util.TipDialog/0.23.1440.826@0.23.1440.826" timestamp="1580973452356" />
+    <state x="533" y="342" key="com.intellij.ide.util.TipDialog/0.23.1440.828@0.23.1440.828" timestamp="1580979474218" />
+    <state x="533" y="342" key="com.intellij.ide.util.TipDialog/0.23.1440.829@0.23.1440.829" timestamp="1584252332310" />
+    <state x="428" y="-724" key="com.intellij.ide.util.TipDialog/0.23.1440.830/-282.-1177.1920.1177@-282.-1177.1920.1177" timestamp="1579487021506" />
+    <state x="533" y="342" key="com.intellij.ide.util.TipDialog/0.23.1440.831@0.23.1440.831" timestamp="1582192203028" />
+    <state x="533" y="343" key="com.intellij.ide.util.TipDialog/0.23.1440.832/-282.-1177.1920.1177@0.23.1440.832" timestamp="1584949223844" />
+    <state x="533" y="343" key="com.intellij.ide.util.TipDialog/0.23.1440.833@0.23.1440.833" timestamp="1583735863883" />
+    <state x="460" y="414" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD" timestamp="1584812013598">
+      <screen x="0" y="23" width="1440" height="825" />
+    </state>
+    <state x="460" y="414" key="com.intellij.jarRepository.RepositoryAttachDialog-DOWNLOAD/0.23.1440.825@0.23.1440.825" timestamp="1584812013598" />
+    <state x="97" y="101" key="new project wizard" timestamp="1584940174645">
+      <screen x="0" y="23" width="1440" height="833" />
+    </state>
+    <state x="97" y="134" key="new project wizard/0.23.1440.825@0.23.1440.825" timestamp="1584813757316" />
+    <state x="97" y="134" key="new project wizard/0.23.1440.828@0.23.1440.828" timestamp="1584555419422" />
+    <state x="97" y="135" key="new project wizard/0.23.1440.830/-282.-1177.1920.1177@0.23.1440.830" timestamp="1584932406918" />
+    <state x="97" y="101" key="new project wizard/0.23.1440.833/-282.-1177.1920.1177@0.23.1440.833" timestamp="1584940174645" />
+  </component>
+</project>

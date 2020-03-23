@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/examples/BasicDemo/BasicDemo.iml" filepath="$PROJECT_DIR$/examples/BasicDemo/BasicDemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/examples/ConnectionEvents/ConnectionEvents.iml" filepath="$PROJECT_DIR$/examples/ConnectionEvents/ConnectionEvents.iml" />
+      <module fileurl="file://$PROJECT_DIR$/examples/EncryptedCommunication/EncryptedCommunication.iml" filepath="$PROJECT_DIR$/examples/EncryptedCommunication/EncryptedCommunication.iml" />
+      <module fileurl="file://$PROJECT_DIR$/examples/duplex/asyncAnswerInDuplex/asyncAnswerInDuplex.iml" filepath="$PROJECT_DIR$/examples/duplex/asyncAnswerInDuplex/asyncAnswerInDuplex.iml" />
+      <module fileurl="file://$PROJECT_DIR$/performanceTests/asyncStressClient/asyncStressClient.iml" filepath="$PROJECT_DIR$/performanceTests/asyncStressClient/asyncStressClient.iml" />
+      <module fileurl="file://$PROJECT_DIR$/examples/duplex/earlyAnswerInDuplex/earlyAnswerInDuplex.iml" filepath="$PROJECT_DIR$/examples/duplex/earlyAnswerInDuplex/earlyAnswerInDuplex.iml" />
+      <module fileurl="file://$PROJECT_DIR$/fpnn.iml" filepath="$PROJECT_DIR$/fpnn.iml" />
+      <module fileurl="file://$PROJECT_DIR$/examples/duplex/oneWayDuplex/oneWayDuplex.iml" filepath="$PROJECT_DIR$/examples/duplex/oneWayDuplex/oneWayDuplex.iml" />
+      <module fileurl="file://$PROJECT_DIR$/performanceTests/singleClientConcurrentTest/singleClientConcurrentTest.iml" filepath="$PROJECT_DIR$/performanceTests/singleClientConcurrentTest/singleClientConcurrentTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/examples/duplex/twoWayDuplex/twoWayDuplex.iml" filepath="$PROJECT_DIR$/examples/duplex/twoWayDuplex/twoWayDuplex.iml" />
+    </modules>
+  </component>
+</project>
