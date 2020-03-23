@@ -81,23 +81,30 @@ Please refer: [API docs](API.md)
 
 ## Directory structure
 
-* **\<fpnn-sdk-java\>/sdk**
+* **\<fpnn-sdk-java\>/src**
 
-	Codes of SDK.
+	Maven Project.
+
+	+ **\<fpnn-sdk-java\>/src/main/java**
+
+		Codes of SDK.
 
 * **\<fpnn-sdk-java\>/examples**
 
-	Examples codes for using this SDK.  
+	Example modules for using this SDK.  
+	All modules are normal module with IDEA, **NOT MAVEN PROJECT** and **NOT MAVEN MODULE**.  
 	Testing server is \<fpnn\>/core/test/serverTest. Refer: [Cpp codes of serverTest](https://github.com/highras/fpnn/blob/master/core/test/serverTest.cpp)
 
-* **\<fpnn-sdk-java\>/tests**
+* **\<fpnn-sdk-java\>/performanceTests**
 
-	+ **\<fpnn-sdk-java\>/tests/asyncStressClient**
+	+ **\<fpnn-sdk-java\>/performanceTests/asyncStressClient**
 
 		Stress & Concurrent testing codes for SDK.  
+		This is normal module with IDEA, **NOT MAVEN PROJECT** and **NOT MAVEN MODULE**.  
 		Testing server is <fpnn>/core/test/serverTest. Refer: [Cpp codes of serverTest](https://github.com/highras/fpnn/blob/master/core/test/serverTest.cpp)
 
-	+ **\<fpnn-sdk-java\>/tests/singleClientConcurrentTest**
+	+ **\<fpnn-sdk-java\>/performanceTests/singleClientConcurrentTest**
 
 		Stability testing codes for SDK.  
+		This is normal module with IDEA, **NOT MAVEN PROJECT** and **NOT MAVEN MODULE**.  
 		Testing server is <fpnn>/core/test/serverTest. Refer: [Cpp codes of serverTest](https://github.com/highras/fpnn/blob/master/core/test/serverTest.cpp)
