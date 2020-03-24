@@ -12,6 +12,14 @@ Java 8
 
 ## Usage
 
+### For Maven Users:
+
+	<dependency>
+	  <groupId>com.ilivedata</groupId>
+	  <artifactId>fpnn</artifactId>
+	  <version>2.0.0-release</version>
+	</dependency>
+
 ### Import package
 
 	import com.fpnn.sdk.*;
