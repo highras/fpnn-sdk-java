@@ -21,5 +21,13 @@
             <version>0.8.17</version>
         </dependency>
     </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub OWNER Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/highras/fpnn-sdk-java</url>
+        </repository>
+    </distributionManagement>
     
 </project>
