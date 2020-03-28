@@ -15,9 +15,9 @@ Java 8
 ### For Maven Users:
 
 	<dependency>
-	  <groupId>com.ilivedata</groupId>
+	  <groupId>com.github.highras</groupId>
 	  <artifactId>fpnn</artifactId>
-	  <version>2.0.0-release</version>
+	  <version>2.0.0-RELEASE</version>
 	</dependency>
 
 ### Import package
