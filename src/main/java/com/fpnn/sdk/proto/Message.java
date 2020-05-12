@@ -1,6 +1,7 @@
 package com.fpnn.sdk.proto;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.TreeMap;
@@ -48,12 +49,82 @@ public class Message {
         return (o != null) ? o : def;
     }
 
+    public int getInt(String key, int defaultValue) {
+        Object obj = payload.get(key);
+        if (obj == null)
+            return defaultValue;
+
+        if (obj instanceof Integer)
+            return (Integer) obj;
+        else if (obj instanceof Long)
+            return ((Long) obj).intValue();
+        else if (obj instanceof BigInteger)
+            return ((BigInteger) obj).intValue();
+        else if (obj instanceof Short)
+            return ((Short) obj).intValue();
+        else if (obj instanceof Byte)
+            return ((Byte) obj).intValue();
+        else
+            return defaultValue;
+    }
+
+    public long getLong(String key, long defaultValue) {
+        Object obj = payload.get(key);
+        if (obj == null)
+            return defaultValue;
+
+        if (obj instanceof Integer)
+            return ((Integer) obj).longValue();
+        else if (obj instanceof Long)
+            return (Long) obj;
+        else if (obj instanceof BigInteger)
+            return ((BigInteger) obj).longValue();
+        else if (obj instanceof Short)
+            return ((Short) obj).longValue();
+        else if (obj instanceof Byte)
+            return ((Byte) obj).longValue();
+        else
+            return defaultValue;
+    }
+
     public Object want(String key) throws NoSuchElementException {
         Object o = payload.get(key);
         if (o == null)
             throw new NoSuchElementException("Cannot found object for key: " + key);
 
         return o;
+    }
+
+    public int wantInt(String key) throws ClassCastException, NoSuchElementException {
+        Object obj = want(key);
+        if (obj instanceof Integer)
+            return (Integer) obj;
+        else if (obj instanceof Long)
+            return ((Long) obj).intValue();
+        else if (obj instanceof BigInteger)
+            return ((BigInteger) obj).intValue();
+        else if (obj instanceof Short)
+            return ((Short) obj).intValue();
+        else if (obj instanceof Byte)
+            return ((Byte) obj).intValue();
+        else
+            throw new ClassCastException("Convert " + obj.getClass().getTypeName() + " to Integer failed.");
+    }
+
+    public long wantLong(String key) throws ClassCastException, NoSuchElementException {
+        Object obj = want(key);
+        if (obj instanceof Integer)
+            return ((Integer) obj).longValue();
+        else if (obj instanceof Long)
+            return (Long) obj;
+        else if (obj instanceof BigInteger)
+            return ((BigInteger) obj).longValue();
+        else if (obj instanceof Short)
+            return ((Short) obj).longValue();
+        else if (obj instanceof Byte)
+            return ((Byte) obj).longValue();
+        else
+            throw new ClassCastException("Convert " + obj.getClass().getTypeName() + " to Long failed.");
     }
 
     //-----------------[ To Bytes Array Functions ]-------------------

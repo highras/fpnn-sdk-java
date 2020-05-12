@@ -1,7 +1,4 @@
-import com.fpnn.sdk.ConnectionConnectedCallback;
-import com.fpnn.sdk.ConnectionWillCloseCallback;
-import com.fpnn.sdk.ErrorCode;
-import com.fpnn.sdk.TCPClient;
+import com.fpnn.sdk.*;
 import com.fpnn.sdk.proto.Answer;
 import com.fpnn.sdk.proto.Quest;
 
@@ -19,12 +16,17 @@ public class ConnectionEvents {
             System.out.println("--- opened ----");
         };
 
-        ConnectionWillCloseCallback closeCb = (InetSocketAddress peerAddress, boolean causedByError) -> {
-            System.out.println("Connection closed by error? " + causedByError);
+        ConnectionWillCloseCallback willCloseCb = (InetSocketAddress peerAddress, boolean causedByError) -> {
+            System.out.println("Connection will be closed by error? " + causedByError);
+        };
+
+        ConnectionHasClosedCallback closedCb = (InetSocketAddress peerAddress, boolean causedByError) -> {
+            System.out.println("Connection has closed by error? " + causedByError);
         };
 
         client.setConnectedCallback(openCb);
-        client.setWillCloseCallback(closeCb);
+        client.setWillCloseCallback(willCloseCb);
+        client.setHasClosedCallback(closedCb);
 
         //-- Sync method
         Quest quest = new Quest("two way demo");

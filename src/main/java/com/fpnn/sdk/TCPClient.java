@@ -27,6 +27,7 @@ public class TCPClient {
 
     private ConnectionConnectedCallback connectedCallback;
     private ConnectionWillCloseCallback connectionWillCloseCallback;
+    private ConnectionHasClosedCallback connectionHasClosedCallback;
 
     //-- Server push / Java Reflect
     private Object questProcessor;
@@ -50,6 +51,7 @@ public class TCPClient {
 
         connectedCallback = null;
         connectionWillCloseCallback = null;
+        connectionHasClosedCallback = null;
 
         questProcessor = null;
         questProcessorName = null;
@@ -117,6 +119,10 @@ public class TCPClient {
 
     public void setWillCloseCallback(ConnectionWillCloseCallback cb) {
         connectionWillCloseCallback = cb;
+    }
+
+    public void setHasClosedCallback(ConnectionHasClosedCallback cb) {
+        connectionHasClosedCallback = cb;
     }
 
     public void setQuestProcessor(Object questProcessor, String questProcessorFullClassName) {
@@ -253,6 +259,9 @@ public class TCPClient {
 
         public void connectResult(InetSocketAddress peerAddress, boolean connected) {
 
+            if (!connected)
+                client.connectionConnectResult(false, hashCode);
+
             if (userCallback != null) {
                 try {
                     userCallback.connectResult(peerAddress, connected);
@@ -261,23 +270,24 @@ public class TCPClient {
                 }
             }
 
-            client.connectionConnectResult(connected, hashCode);
+            if (connected)
+                client.connectionConnectResult(true, hashCode);
         }
     }
 
-    class ClientConnectionClosedCallback implements ConnectionWillCloseCallback {
+    class ClientConnectionWillClosingCallback implements ConnectionWillCloseCallback {
 
         private ConnectionWillCloseCallback userCallback;
         private TCPClient client;
         private int hashCode;
 
-        ClientConnectionClosedCallback(TCPClient client,int hashCode,  ConnectionWillCloseCallback callback) {
+        ClientConnectionWillClosingCallback(TCPClient client, int hashCode, ConnectionWillCloseCallback callback) {
             this.client = client;
             userCallback = callback;
             this.hashCode = hashCode;
         }
 
-        public void  connectionWillClose(InetSocketAddress peerAddress, boolean causedByError) {
+        public void connectionWillClose(InetSocketAddress peerAddress, boolean causedByError) {
 
             if (userCallback != null) {
                 try {
@@ -288,6 +298,30 @@ public class TCPClient {
             }
 
             client.connectionDisconnected(hashCode);
+        }
+    }
+
+    class ClientConnectionHasClosedCallback implements ConnectionHasClosedCallback {
+
+        private ConnectionHasClosedCallback userCallback;
+        private TCPClient client;
+        private int hashCode;
+
+        ClientConnectionHasClosedCallback(TCPClient client, int hashCode, ConnectionHasClosedCallback callback) {
+            this.client = client;
+            userCallback = callback;
+            this.hashCode = hashCode;
+        }
+
+        public void connectionHasClosed(InetSocketAddress peerAddress, boolean causedByError) {
+
+            if (userCallback != null) {
+                try {
+                    userCallback.connectionHasClosed(peerAddress, causedByError);
+                } catch (Exception e) {
+                    ErrorRecorder.record("Connection has closed callback exception.", e);
+                }
+            }
         }
     }
 
@@ -315,6 +349,7 @@ public class TCPClient {
             if (connection == null || hashCode != connection.hashCode())
                 return;
 
+            connection = null;
             status = ClientStatus.Closed;
             interLocker.notifyAll();
         }
@@ -342,14 +377,16 @@ public class TCPClient {
                 connection = new TCPConnection(peerAddress);
 
                 ClientConnectedCallback openCb = new ClientConnectedCallback(this, connection.hashCode(), connectedCallback);
-                ClientConnectionClosedCallback closeCb = new ClientConnectionClosedCallback(this, connection.hashCode(), connectionWillCloseCallback);
+                ClientConnectionWillClosingCallback closingCb = new ClientConnectionWillClosingCallback(this, connection.hashCode(), connectionWillCloseCallback);
+                ClientConnectionHasClosedCallback closedCb = new ClientConnectionHasClosedCallback(this, connection.hashCode(), connectionHasClosedCallback);
 
                 if (encKit != null)
                     connection.setEncryptionKit(encKit);
 
                 connection.setQuestTimeout(questTimeout);
                 connection.setConnectedCallback(openCb);
-                connection.setWillCloseCallback(closeCb);
+                connection.setWillCloseCallback(closingCb);
+                connection.setHasClosedCallback(closedCb);
                 connection.setQuestProcessor(questProcessor, questProcessorName);
 
                 boolean connStatus;

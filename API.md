@@ -6,7 +6,7 @@
 
 ## Current Version
 
-	public static String ClientEngine.SDKVersion = "2.0.0";
+	public static String ClientEngine.SDKVersion = "2.0.1";
 
 ## Global Config & ClientEngine (Optional)
 
@@ -161,12 +161,21 @@ Set the connected evnet. Prototype:
 #### Close Event
 
 	public void setWillCloseCallback(ConnectionWillCloseCallback cb);
+	public void setHasClosedCallback(ConnectionHasClosedCallback cb);
 
-Set the close evnet. Prototype:
+Set the will close evnet & has closed event. Prototype:
 
-	public interface ConnectionWillCloseCallback {
-	    void connectionWillClose(InetSocketAddress peerAddress, boolean causedByError);
-	}
++ Will closing callback:
+
+		public interface ConnectionWillCloseCallback {
+		    void connectionWillClose(InetSocketAddress peerAddress, boolean causedByError);
+		}
+
++ Has closed callback:
+
+		public interface ConnectionHasClosedCallback {
+		    void connectionHasClosed(InetSocketAddress peerAddress, boolean causedByError);
+		}
 
 #### Server Push
 
@@ -189,7 +198,7 @@ Set the close evnet. Prototype:
 
 ### Send Quest & Answer Methods
 
-#### Sewnd Quest
+#### Send Quest
 
 	//-- synchronous
 	public Answer sendQuest(Quest quest) throws InterruptedException;
@@ -268,11 +277,21 @@ Add data to FPNN Message.
 
 Fetch data from FPNN Messsage. If data is not exist, the `null` or `def` will be returned.
 
+	public int getInt(String key, int defaultValue);
+	public long getLong(String key, long defaultValue);
+
+Fetch int type or long type data from FPNN Messsage. If data is not exist, the `defaultValue` will be returned.
+
 #### Want Data
 
 	public Object want(String key) throws NoSuchElementException;
 
 Fetch data from FPNN Messsage. If data is not exist, a `NoSuchElementException` exception will be thrown.
+
+	public int wantInt(String key) throws ClassCastException, NoSuchElementException;
+	public long wantLong(String key) throws ClassCastException, NoSuchElementException;
+
+Fetch int type or long type data from FPNN Messsage. If data is not exist, a `NoSuchElementException` exception will be thrown. If data type dose not match, a `ClassCastException` exception will be thrown.
 
 #### Serialize
 

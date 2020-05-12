@@ -8,6 +8,11 @@ import org.msgpack.value.ValueType;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +32,14 @@ public class MessagePayloadUnpacker {
     }
     public MessagePayloadUnpacker(byte[] contents, int offset, int length) {
         unpacker = MessagePack.newDefaultUnpacker(contents, offset, length);
+    }
+
+    private String checkCharset(byte[] bytes, String charsetName) throws CharacterCodingException {
+        Charset charset = Charset.forName(charsetName);
+        CharsetDecoder decoder = charset.newDecoder();
+        decoder.onMalformedInput(CodingErrorAction.REPORT);
+        decoder.onUnmappableCharacter(CodingErrorAction.REPORT);
+        return decoder.decode(ByteBuffer.wrap(bytes)).toString();
     }
 
     private Object dispatch() throws IOException {
@@ -60,13 +73,18 @@ public class MessagePayloadUnpacker {
                     Double doubleValue = unpacker.unpackDouble();
                     return doubleValue;
                 case STRING:
-                    String str = unpacker.unpackString();
-                    return str;
+//                    String str = unpacker.unpackString();
+//                    return str;
                 case BINARY:
                     length = unpacker.unpackBinaryHeader();
                     byte[] binaryValue = new byte[length];
                     unpacker.readPayload(binaryValue);
-                    return binaryValue;
+                    try {
+                        return checkCharset(binaryValue,"UTF-8");
+                    }
+                    catch (CharacterCodingException e) {
+                        return binaryValue;
+                    }
                 case ARRAY:
                     length = unpacker.unpackArrayHeader();
                     List arrayValue = new ArrayList(length);
