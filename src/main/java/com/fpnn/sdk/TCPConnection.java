@@ -228,7 +228,7 @@ class TCPConnection {
 
         synchronized (this) {
             if (connectionClosed)
-                return;
+                succeed = false;
 
             connected = succeed;
             connectedCallbackCalled = true;

@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadFactory;
 
 public class ClientEngine {
 
-    public static String SDKVersion = "2.0.1";
+    public static String SDKVersion = "2.0.2";
 
     private static ClientEngineCore engineCore = new ClientEngineCore();
     private static boolean stopFuncCalled = false;

@@ -13,7 +13,7 @@ public class ConnectionEvents {
         TCPClient client = TCPClient.create("52.83.245.22", 13609);
 
         ConnectionConnectedCallback openCb = (InetSocketAddress peerAddress, boolean connected) -> {
-            System.out.println("--- opened ----");
+            System.out.println("--- opened: connected status is " + connected);
         };
 
         ConnectionWillCloseCallback willCloseCb = (InetSocketAddress peerAddress, boolean causedByError) -> {
