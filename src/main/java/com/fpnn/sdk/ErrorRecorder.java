@@ -13,8 +13,8 @@ public class ErrorRecorder implements ErrorRecorderInterface {
 
     //-----------------[ Static Properties & Methods ]-------------------
     private static ErrorRecorderInterface instance = new ErrorRecorder();
-    public static ErrorRecorderInterface getInstance() {
-        return instance;
+    public static ErrorRecorder getInstance() {
+        return (ErrorRecorder)instance;
     }
     public static void setErrorRecorder(ErrorRecorderInterface ins) {
         instance = ins;
