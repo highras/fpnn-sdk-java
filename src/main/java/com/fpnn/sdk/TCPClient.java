@@ -168,6 +168,10 @@ public class TCPClient {
     }
 
     public Answer sendQuest(Quest quest, int timeoutInSeconds) throws InterruptedException {
+        if(quest.isOneWay()){
+            sendQuest(quest, (AnswerCallback) null, timeoutInSeconds);
+            return null;
+        }
         SyncAnswerCallback callback = new SyncAnswerCallback();
         sendQuest(quest, callback, timeoutInSeconds);
         return callback.getAnswer();
@@ -184,7 +188,9 @@ public class TCPClient {
         synchronized (interLocker) {
             if (status == ClientStatus.Closed) {
                 if (!autoConnect) {
-                    TCPConnection.runCallback(callback, ErrorCode.FPNN_EC_CORE_INVALID_CONNECTION.value());
+                    if(callback != null){
+                        TCPConnection.runCallback(callback, ErrorCode.FPNN_EC_CORE_INVALID_CONNECTION.value());
+                    }
                     return;
                 }
                 else
@@ -211,7 +217,7 @@ public class TCPClient {
 
         if (conn != null)
             conn.sendQuest(quest, callback, (timeoutInSeconds != 0) ? timeoutInSeconds : questTimeout);
-        else
+        else if(callback != null)
             TCPConnection.runCallback(callback, ErrorCode.FPNN_EC_CORE_INVALID_CONNECTION.value());
     }
 

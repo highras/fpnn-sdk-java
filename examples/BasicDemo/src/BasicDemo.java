@@ -12,7 +12,7 @@ public class BasicDemo {
         //-- Optional
         ClientEngine.setAutoStop(false);
 
-        TCPClient client = TCPClient.create("52.83.245.22", 13609);
+        TCPClient client = TCPClient.create("52.83.245.22", 9876);
 
         ConnectionConnectedCallback openCb = (InetSocketAddress peerAddress, boolean connected) -> {
             System.out.println("--- opened ----");
@@ -31,6 +31,14 @@ public class BasicDemo {
                 "/Users/shiwangxing/Documents/Development/TestingPlayground/keys/test-secp256k1-public.der"))
             System.out.println("Enable encrypt failed.");
 */
+        Quest oneWayDemo = new Quest("one way demo", true);
+        try{
+            System.out.println("send one way: ");
+            client.sendQuest(oneWayDemo);
+        }catch (InterruptedException ex){
+            ex.printStackTrace();
+        }
+
         Quest quest = new Quest("two way demo");
         try {
             Answer answer = client.sendQuest(quest);
@@ -64,6 +72,7 @@ public class BasicDemo {
                 Object value = answer.getPayload().get(obj);
                 System.out.println("--- key: " + obj + ", value: " + value);
             }
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
