@@ -11,12 +11,14 @@ import java.util.concurrent.ThreadFactory;
 
 public class ClientEngine {
 
-    public static String SDKVersion = "2.0.4";
+    public static String SDKVersion = "2.0.5";
 
     private static ClientEngineCore engineCore = new ClientEngineCore();
     private static boolean stopFuncCalled = false;
     private static boolean autoStop = true;
     private static int questTimeout = 5;
+    private static int pingInterval = 10;
+    private static int maxPingRetryCount = 2;
     private static int maxThreadInTaskPool = 4;
     private static int maxPackageLength = 1024 * 1024 * 10;     //-- 10 MB
     private static ExecutorService threadPool = null;
@@ -27,6 +29,22 @@ public class ClientEngine {
 
     public static void setAutoStop(boolean auto) {
         autoStop = auto;
+    }
+
+    public static void setPingInterval(int interval) {
+        pingInterval = interval;
+    }
+
+    public static int getPingInterval() {
+        return pingInterval;
+    }
+
+    public static void setMaxPingRetryCount(int retryCount) {
+        maxPingRetryCount = retryCount;
+    }
+
+    public static int getMaxPingRetryCount() {
+        return maxPingRetryCount;
     }
 
     public static int getQuestTimeout() {

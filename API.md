@@ -6,7 +6,7 @@
 
 ## Current Version
 
-	public static String ClientEngine.SDKVersion = "2.0.4";
+	public static String ClientEngine.SDKVersion = "2.0.5";
 
 ## Global Config & ClientEngine (Optional)
 

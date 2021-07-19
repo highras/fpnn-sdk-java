@@ -15,6 +15,12 @@ public class TCPClient {
         Connected
     }
 
+    protected static class KeepAliveParams{
+        int pingTimeout;
+        int pingInterval;
+        int maxPingRetryCount;
+    }
+
     //-----------------[ Properties ]-------------------
 
     private Object interLocker;
@@ -24,6 +30,7 @@ public class TCPClient {
     private boolean autoConnect;
     private volatile ClientStatus status;
     private TCPConnection connection;
+    private KeepAliveParams keepAliveParams;
 
     private ConnectionConnectedCallback connectedCallback;
     private ConnectionWillCloseCallback connectionWillCloseCallback;
@@ -57,6 +64,7 @@ public class TCPClient {
         questProcessorName = null;
 
         keyGenerator = null;
+        keepAliveParams = null;
     }
 
     public static TCPClient create(String host, int port) {
@@ -131,6 +139,32 @@ public class TCPClient {
 
         this.questProcessor = questProcessor;
         this.questProcessorName = questProcessorFullClassName;
+    }
+
+    public void setKeepAlive(boolean keepAlive){
+        if(keepAlive){
+            if(keepAliveParams == null){
+                keepAliveParams = new KeepAliveParams();
+                keepAliveParams.pingInterval = ClientEngine.getPingInterval();
+                keepAliveParams.maxPingRetryCount = ClientEngine.getMaxPingRetryCount();
+                keepAliveParams.pingTimeout = ClientEngine.getQuestTimeout();
+            }
+        }
+    }
+
+    public void setKeepAliveTimeoutSecond(int second){
+        setKeepAlive(true);
+        keepAliveParams.pingTimeout = second;
+    }
+
+    public void setKeepAliveIntervalSecond(int second){
+        setKeepAlive(true);
+        keepAliveParams.pingInterval = second;
+    }
+
+    public void setKeepAliveMaxPingRetryCount(int count){
+        setKeepAlive(true);
+        keepAliveParams.maxPingRetryCount = count;
     }
 
     private boolean enableEncryptorByDerFile(String curve, String keyFilePath, boolean streamMode, boolean reinforce) {
@@ -380,7 +414,7 @@ public class TCPClient {
             }
 
             if (status == ClientStatus.Closed) {
-                connection = new TCPConnection(peerAddress);
+                connection = new TCPConnection(peerAddress, keepAliveParams);
 
                 ClientConnectedCallback openCb = new ClientConnectedCallback(this, connection.hashCode(), connectedCallback);
                 ClientConnectionWillClosingCallback closingCb = new ClientConnectionWillClosingCallback(this, connection.hashCode(), connectionWillCloseCallback);

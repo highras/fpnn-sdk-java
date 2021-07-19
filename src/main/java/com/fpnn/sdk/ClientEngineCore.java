@@ -161,6 +161,7 @@ class ClientEngineCore extends Thread {
 
         for (TCPConnection connection : connSet) {
             connection.checkTimeoutCallbacks();
+            connection.checkSendPing();
         }
     }
 
@@ -305,6 +306,9 @@ class ClientEngineCore extends Thread {
             registerChannelEvents();
 
             long milliseconds = getNextTimeoutInterval();
+            if(milliseconds > 1000){
+                milliseconds = 1000;
+            }
             try {
                 if (milliseconds == 0)
                     selector.select();

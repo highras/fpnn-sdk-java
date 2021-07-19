@@ -18,6 +18,65 @@ import java.util.*;
 
 class TCPConnection {
 
+    private static class KeepAliveInfos extends TCPClient.KeepAliveParams {
+        int unreceivedThreshold;
+        long lastReceivedMs;
+        long lastPingSendMs;
+
+        private void config(TCPClient.KeepAliveParams params){
+            pingTimeout = params.pingTimeout;
+            pingInterval = params.pingInterval;
+            maxPingRetryCount = params.maxPingRetryCount;
+            unreceivedThreshold = (pingTimeout * maxPingRetryCount + pingInterval) * 1000;
+            lastPingSendMs = 0;
+            lastReceivedMs = System.currentTimeMillis();
+        }
+
+        private void updateReceivedMs(){
+            lastReceivedMs = System.currentTimeMillis();
+        }
+
+        private void updatePingSendMs(){
+            lastPingSendMs = System.currentTimeMillis();
+        }
+
+        private int isRequireSendPing(){
+            long curr = System.currentTimeMillis();
+            if(curr >= (lastReceivedMs + pingInterval * 1000) && curr >= (lastPingSendMs + pingTimeout * 1000)){
+                return pingTimeout;
+            }else{
+                return 0;
+            }
+        }
+        private boolean isLost(){
+            long curr = System.currentTimeMillis();
+            return curr > (lastReceivedMs + unreceivedThreshold);
+        }
+    }
+
+    private static class KeepAliveCallback extends AnswerCallback{
+
+        TCPConnection connection;
+
+        @Override
+        public void onAnswer(Answer answer) {
+
+        }
+
+        @Override
+        public void onException(Answer answer, int errorCode) {
+            String ex = "";
+            if(answer != null){
+                ex = (String)answer.get("ex", "");
+            }
+            try{
+                ErrorRecorder.record("Keep alive ping for "+ connection.peerAddress.toString() +" failed, local addr: "+connection.channel.getLocalAddress().toString() + " ,errorCode: "+errorCode+" ,infos: " + ex);
+            }catch (IOException ioException) {
+                ErrorRecorder.record("get connection local addr exeception ", ioException);
+            }
+        }
+    }
+
     private volatile boolean connected;   //-- Pls Note: this filed can be visited without synchronized block in same case, but in other case MUST be visited in synchronized block.
     private SocketChannel channel;
     private InetSocketAddress peerAddress;
@@ -26,6 +85,7 @@ class TCPConnection {
     private ConnectionConnectedCallback connectedCallback;
     private ConnectionWillCloseCallback connectionWillCloseCallback;
     private ConnectionHasClosedCallback connectionHasClosedCallback;
+    private KeepAliveInfos keepAliveInfos;
 
     //-- Server push / Java Reflect
     private Object questProcessor;
@@ -48,7 +108,7 @@ class TCPConnection {
 
     //-----------------[ Constructor Functions ]-------------------
 
-    public TCPConnection(InetSocketAddress remote) {
+    public TCPConnection(InetSocketAddress remote, TCPClient.KeepAliveParams keepAliveParams) {
         connected = false;
         channel = null;
         peerAddress = remote;
@@ -74,6 +134,19 @@ class TCPConnection {
         keyExchanged = false;
         currentSendingBuffer = null;
         encryptionKit = null;
+        keepAliveInfos = null;
+
+        if(keepAliveParams != null)
+        {
+            keepAliveInfos = new KeepAliveInfos();
+            if(keepAliveParams.pingTimeout == 0){
+                keepAliveParams.pingTimeout = ClientEngine.getQuestTimeout();
+                keepAliveInfos.config(keepAliveParams);
+                keepAliveParams.pingTimeout = 0;
+            }else{
+                keepAliveInfos.config(keepAliveParams);
+            }
+        }
     }
 
     //-----------------[ Properties methods ]-------------------
@@ -222,6 +295,36 @@ class TCPConnection {
         };
 
         sendQuest(quest, callback, questTimeout, true);
+    }
+
+    private void updateKeepAliveMs(){
+        keepAliveInfos.updatePingSendMs();
+    }
+
+    private void updateReceivedMs(){
+        if(keepAliveInfos != null){
+            keepAliveInfos.updateReceivedMs();
+        }
+    }
+
+    public void checkSendPing(){
+        if(keepAliveInfos == null){
+            return;
+        }
+        boolean isLost = keepAliveInfos.isLost();
+        if(isLost){
+            closeByUser();
+        }else {
+            int timeout = keepAliveInfos.isRequireSendPing();
+            if(timeout > 0){
+                KeepAliveCallback callback = new KeepAliveCallback();
+                callback.connection = this;
+                Quest quest = new Quest("*ping");
+                sendQuest(quest, callback, timeout);
+                updateKeepAliveMs();
+            }
+        }
+
     }
 
     private void afterKeyExchanged(boolean succeed) {
@@ -446,6 +549,7 @@ class TCPConnection {
         }
 
         if  (result.success) {
+            updateReceivedMs();
             LinkedList<Quest> questList = result.getQuestList();
 
             if (questList != null) {

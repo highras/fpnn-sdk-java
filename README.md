@@ -17,7 +17,7 @@ Java 8
 	<dependency>
 	  <groupId>com.github.highras</groupId>
 	  <artifactId>fpnn</artifactId>
-	  <version>2.0.4-RELEASE</version>
+	  <version>2.0.5-RELEASE</version>
 	</dependency>
 
 ### Import package
@@ -51,6 +51,12 @@ Java 8
 	    void connectionWillClose(InetSocketAddress peerAddress, boolean causedByError);
 	}
 
+#### Set KeepAlive(Optional)
+
+    public void setKeepAlive(boolean keepAlive)
+    
+   Note: The default connection is not keepAlive
+   
 #### Set Encryption (Optional)
 
 	public boolean client.enableEncryptorByDerFile(String curve, String keyFilePath);
